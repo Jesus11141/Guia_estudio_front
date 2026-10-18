@@ -55,20 +55,27 @@ class _BooksScreenState extends ConsumerState<BooksScreen> {
                 return matchesCategory && matchesSearch;
               }).toList();
 
+              final isMobile = MediaQuery.of(context).size.width < 600;
+
               return CustomScrollView(
                 slivers: [
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 32, 24, 20),
+                      padding: EdgeInsets.fromLTRB(
+                        isMobile ? 16 : 24,
+                        isMobile ? 16 : 32,
+                        isMobile ? 16 : 24,
+                        isMobile ? 14 : 20,
+                      ),
                       child: Container(
-                        padding: const EdgeInsets.all(32),
+                        padding: EdgeInsets.all(isMobile ? 18 : 32),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
                             colors: [Color(0xFF8B5CF6), Color(0xFF4F46E5)],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: BorderRadius.circular(isMobile ? 20 : 24),
                           boxShadow: [
                             BoxShadow(
                               color: const Color(0xFF4F46E5).withOpacity(0.3),
@@ -83,19 +90,19 @@ class _BooksScreenState extends ConsumerState<BooksScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Biblioteca Virtual',
                                     style: TextStyle(
-                                      fontSize: 32,
+                                      fontSize: isMobile ? 22 : 32,
                                       fontWeight: FontWeight.w900,
                                       color: Colors.white,
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: 6),
                                   Text(
                                     'Explora libros y material de lectura por categorías para ampliar tus conocimientos.',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: isMobile ? 13 : 16,
                                       color: Colors.indigo[50],
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -103,7 +110,7 @@ class _BooksScreenState extends ConsumerState<BooksScreen> {
                                 ],
                               ),
                             ),
-                            if (MediaQuery.of(context).size.width > 600)
+                            if (!isMobile)
                               const Icon(Icons.local_library, size: 76, color: Colors.white24),
                           ],
                         ),
@@ -114,7 +121,7 @@ class _BooksScreenState extends ConsumerState<BooksScreen> {
                   // Search and Category Filters
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      padding: EdgeInsets.symmetric(horizontal: isMobile ? 16.0 : 24.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -222,13 +229,13 @@ class _BooksScreenState extends ConsumerState<BooksScreen> {
                     )
                   else
                     SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 24),
                       sliver: SliverGrid(
-                        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                           maxCrossAxisExtent: 350,
                           mainAxisExtent: 280,
-                          crossAxisSpacing: 20,
-                          mainAxisSpacing: 20,
+                          crossAxisSpacing: isMobile ? 14 : 20,
+                          mainAxisSpacing: isMobile ? 14 : 20,
                         ),
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {

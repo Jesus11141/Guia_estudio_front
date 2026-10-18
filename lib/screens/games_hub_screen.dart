@@ -397,6 +397,7 @@ class GamesHubScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authProvider);
+    final isMobile = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -404,18 +405,18 @@ class GamesHubScreen extends ConsumerWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1100),
           child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 24, vertical: isMobile ? 16 : 32),
             children: [
               // Header Banner
               Container(
-                padding: const EdgeInsets.all(32),
+                padding: EdgeInsets.all(isMobile ? 18 : 32),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFF6366F1), Color(0xFFA855F7), Color(0xFFEC4899)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(28),
+                  borderRadius: BorderRadius.circular(isMobile ? 20 : 28),
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFFA855F7).withOpacity(0.3),
@@ -433,36 +434,36 @@ class GamesHubScreen extends ConsumerWidget {
                           Row(
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                                padding: EdgeInsets.symmetric(horizontal: isMobile ? 10 : 14, vertical: isMobile ? 4 : 6),
                                 decoration: BoxDecoration(
                                   color: Colors.white.withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
-                                child: const Row(
+                                child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.sports_esports, color: Colors.white, size: 18),
-                                    SizedBox(width: 8),
-                                    Text('ZONA DE JUEGOS', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: 1.1)),
+                                    Icon(Icons.sports_esports, color: Colors.white, size: isMobile ? 15 : 18),
+                                    const SizedBox(width: 6),
+                                    Text('ZONA DE JUEGOS', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: isMobile ? 11 : 13, letterSpacing: 1.1)),
                                   ],
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 16),
-                          const Text(
+                          SizedBox(height: isMobile ? 10 : 16),
+                          Text(
                             '¡Aprende Jugando!',
-                            style: TextStyle(fontSize: 34, fontWeight: FontWeight.w900, color: Colors.white),
+                            style: TextStyle(fontSize: isMobile ? 22 : 34, fontWeight: FontWeight.w900, color: Colors.white),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 6),
                           Text(
                             'Practica tus habilidades jugando, supera retos y junta estrellas para tus premios favoritos.',
-                            style: TextStyle(fontSize: 16, color: Colors.purple.shade50, height: 1.4),
+                            style: TextStyle(fontSize: isMobile ? 13 : 16, color: Colors.purple.shade50, height: 1.3),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(width: 24),
+                    SizedBox(width: isMobile ? 12 : 24),
                     // Stars badge & store link
                     InkWell(
                       onTap: () {
@@ -470,7 +471,7 @@ class GamesHubScreen extends ConsumerWidget {
                       },
                       borderRadius: BorderRadius.circular(20),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        padding: EdgeInsets.symmetric(horizontal: isMobile ? 12 : 20, vertical: isMobile ? 10 : 16),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),

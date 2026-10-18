@@ -15,6 +15,8 @@ class GradesScreen extends ConsumerWidget {
     final user = ref.watch(authProvider);
     final avatarItem = AvatarCatalog.find(user?.avatar);
 
+    final isMobile = MediaQuery.of(context).size.width < 600;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF1F5F9), // Lighter slate background for more contrast
       body: Center(
@@ -24,16 +26,21 @@ class GradesScreen extends ConsumerWidget {
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
+                  padding: EdgeInsets.fromLTRB(
+                    isMobile ? 16 : 24,
+                    isMobile ? 16 : 32,
+                    isMobile ? 16 : 24,
+                    isMobile ? 16 : 32,
+                  ),
                   child: Container(
-                    padding: const EdgeInsets.all(32),
+                    padding: EdgeInsets.all(isMobile ? 18 : 32),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [Color(0xFF4F46E5), Color(0xFF7C3AED)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: BorderRadius.circular(isMobile ? 20 : 24),
                       boxShadow: [
                         BoxShadow(color: const Color(0xFF4F46E5).withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 10))
                       ],
@@ -44,39 +51,62 @@ class GradesScreen extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('¡Hola, ${user?.name ?? user?.email ?? 'Estudiante'}!', style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white)),
-                              const SizedBox(height: 8),
-                              Text('Bienvenido a tu plataforma de aprendizaje. ¿Qué quieres estudiar hoy?', style: TextStyle(fontSize: 18, color: Colors.indigo[50])),
+                              Text(
+                                '¡Hola, ${user?.name ?? user?.email ?? 'Estudiante'}!',
+                                style: TextStyle(
+                                  fontSize: isMobile ? 22 : 32,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Bienvenido a tu plataforma de aprendizaje. ¿Qué quieres estudiar hoy?',
+                                style: TextStyle(
+                                  fontSize: isMobile ? 13 : 18,
+                                  color: Colors.indigo[50],
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: 12),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          padding: EdgeInsets.symmetric(horizontal: isMobile ? 10 : 16, vertical: isMobile ? 8 : 12),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.18),
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(isMobile ? 16 : 20),
                             border: Border.all(color: Colors.white.withOpacity(0.35), width: 1.5),
                           ),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(avatarItem.emoji, style: const TextStyle(fontSize: 44)),
+                              Text(avatarItem.emoji, style: TextStyle(fontSize: isMobile ? 32 : 44)),
+                              const SizedBox(height: 2),
+                              Text(
+                                avatarItem.name,
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: isMobile ? 11 : 13),
+                              ),
                               const SizedBox(height: 4),
-                              Text(avatarItem.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-                              const SizedBox(height: 6),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                 decoration: BoxDecoration(
                                   color: Colors.amber.shade300,
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Text('⭐', style: TextStyle(fontSize: 12)),
-                                    const SizedBox(width: 4),
-                                    Text('${user?.stars ?? 0}', style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF78350F), fontSize: 13)),
+                                    const Text('⭐', style: TextStyle(fontSize: 11)),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      '${user?.stars ?? 0}',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w900,
+                                        color: const Color(0xFF78350F),
+                                        fontSize: isMobile ? 11 : 13,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -90,12 +120,19 @@ class GradesScreen extends ConsumerWidget {
               ),
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  padding: EdgeInsets.symmetric(horizontal: isMobile ? 16.0 : 24.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Tus Grados / Cursos', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
-                      const SizedBox(height: 16),
+                      Text(
+                        'Tus Grados / Cursos',
+                        style: TextStyle(
+                          fontSize: isMobile ? 18 : 22,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF1E293B),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
                     ],
                   ),
                 ),
@@ -111,13 +148,13 @@ class GradesScreen extends ConsumerWidget {
                     );
                   }
                   return SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 24),
                     sliver: SliverGrid(
-                      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                         maxCrossAxisExtent: 450,
-                        mainAxisExtent: 140,
-                        crossAxisSpacing: 24,
-                        mainAxisSpacing: 24,
+                        mainAxisExtent: isMobile ? 120 : 140,
+                        crossAxisSpacing: isMobile ? 14 : 24,
+                        mainAxisSpacing: isMobile ? 14 : 24,
                       ),
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
