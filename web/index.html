@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Aprende Estudia">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>Aprende Estudia</title>
+  <link rel="manifest" href="manifest.json">
+</head>
+  <script>
+    var _appAudioCtx = null;
+    function _getAudioContext() {
+      try {
+        if (!_appAudioCtx) {
+          var AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) _appAudioCtx = new AudioCtx();
+        }
+        if (_appAudioCtx && _appAudioCtx.state === 'suspended') {
+          _appAudioCtx.resume();
+        }
+      } catch (e) {}
+      return _appAudioCtx;
+    }
+
+    window.playAppAudio = function(type) {
+      try {
+        var ctx = _getAudioContext();
+        if (!ctx) return;
+        var now = ctx.currentTime;
+
+        if (type === 'correct') {
+          // Cheerful 2-tone coin/star chime
+          var osc = ctx.createOscillator();
+          var gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.frequency.setValueAtTime(587.33, now); // D5
+          osc.frequency.setValueAtTime(880, now + 0.09); // A5
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'wrong') {
+          // Gentle soft boing
+          var osc = ctx.createOscillator();
+          var gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.frequency.setValueAtTime(260, now);
+          osc.frequency.exponentialRampToValueAtTime(140, now + 0.22);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+          osc.start(now);
+          osc.stop(now + 0.22);
+        } else if (type === 'win') {
+          // Triumphant 4-note victory chord (C5, E5, G5, C6)
+          var notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach(function(freq, idx) {
+            var o = ctx.createOscillator();
+            var g = ctx.createGain();
+            o.type = 'triangle';
+            o.connect(g);
+            g.connect(ctx.destination);
+            var t = now + idx * 0.11;
+            o.frequency.setValueAtTime(freq, t);
+            g.gain.setValueAtTime(0.28, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+            o.start(t);
+            o.stop(t + 0.45);
+          });
+        } else if (type === 'star') {
+          // Sparkle chime
+          var osc = ctx.createOscillator();
+          var gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.frequency.setValueAtTime(987.77, now);
+          osc.frequency.exponentialRampToValueAtTime(1318.51, now + 0.15);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        }
+      } catch (e) {
+        console.error('Audio error:', e);
+      }
+    };
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
