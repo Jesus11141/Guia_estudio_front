@@ -562,5 +562,4 @@ class _MainNavigatorState extends ConsumerState<MainNavigator> {
       ),
     );
   }
-  }
 }
