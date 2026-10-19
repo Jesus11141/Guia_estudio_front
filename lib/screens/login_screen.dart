@@ -44,25 +44,59 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F5F9), // Slate 100
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(40.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.school, size: 80, color: Color(0xFF6366F1)),
-                    const SizedBox(height: 16),
-                    const Text('Aprende Estudia', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Color(0xFF1E293B))),
-                    const SizedBox(height: 8),
-                    const Text('Inicia sesión para continuar', style: TextStyle(color: Color(0xFF64748B), fontSize: 16)),
-                    const SizedBox(height: 40),
+      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
+      body: Stack(
+        children: [
+          Positioned(
+            top: 16,
+            right: 16,
+            child: IconButton(
+              tooltip: isDark ? 'Modo Claro' : 'Modo Oscuro',
+              icon: Icon(
+                isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                color: isDark ? const Color(0xFFFCD34D) : const Color(0xFF475569),
+              ),
+              onPressed: () => ref.read(themeModeProvider.notifier).toggle(),
+            ),
+          ),
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: Card(
+                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    side: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(40.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.school, size: 80, color: Color(0xFF6366F1)),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Aprende Estudia',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w900,
+                            color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Inicia sesión para continuar',
+                          style: TextStyle(
+                            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 40),
                     TextField(
                       controller: _emailCtrl,
                       textInputAction: TextInputAction.next,
@@ -109,6 +143,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         ),
       ),
-    );
+    ],
+  ),
+);
   }
 }

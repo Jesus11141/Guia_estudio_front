@@ -19,20 +19,36 @@ class _AdminScoresScreenState extends ConsumerState<AdminScoresScreen> {
     final gradesAsync = ref.watch(gradesProvider);
     final scoresAsync = ref.watch(scoresProvider(_selectedGradeId));
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.all(32.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Calificaciones de los Estudiantes', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+          Text(
+            'Calificaciones de los Estudiantes',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+            ),
+          ),
           const SizedBox(height: 32),
           
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.white, 
-              borderRadius: BorderRadius.circular(16), 
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 15, offset: const Offset(0, 8))]
+              color: isDark ? const Color(0xFF1E293B) : Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+              boxShadow: [
+                BoxShadow(
+                  color: isDark ? Colors.black.withOpacity(0.2) : Colors.black.withOpacity(0.05),
+                  blurRadius: 15,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
             child: gradesAsync.when(
               data: (grades) => DropdownButtonFormField<String>(
@@ -40,6 +56,7 @@ class _AdminScoresScreenState extends ConsumerState<AdminScoresScreen> {
                   labelText: 'Filtrar por Grado (Opcional)',
                   prefixIcon: Icon(Icons.filter_list),
                 ),
+                dropdownColor: isDark ? const Color(0xFF1E293B) : Colors.white,
                 value: _selectedGradeId,
                 items: [
                   const DropdownMenuItem(value: null, child: Text('Todos los grados')),
@@ -57,7 +74,15 @@ class _AdminScoresScreenState extends ConsumerState<AdminScoresScreen> {
             child: scoresAsync.when(
               data: (scores) {
                 if (scores.isEmpty) {
-                  return const Center(child: Text('No hay calificaciones registradas aún.', style: TextStyle(fontSize: 18, color: Colors.grey)));
+                  return Center(
+                    child: Text(
+                      'No hay calificaciones registradas aún.',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
+                      ),
+                    ),
+                  );
                 }
 
                 return ListView.builder(
@@ -79,6 +104,11 @@ class _AdminScoresScreenState extends ConsumerState<AdminScoresScreen> {
                     final dateStr = DateFormat('dd/MM/yyyy HH:mm').format(parsedDate);
 
                     return Card(
+                      color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        side: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+                      ),
                       margin: const EdgeInsets.only(bottom: 12),
                       child: Padding(
                         padding: const EdgeInsets.all(20),
@@ -99,9 +129,21 @@ class _AdminScoresScreenState extends ConsumerState<AdminScoresScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(score.userName, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                                  Text(
+                                    score.userName,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                                    ),
+                                  ),
                                   const SizedBox(height: 4),
-                                  Text('${score.userGrade} • ${score.subjectName}', style: const TextStyle(color: Color(0xFF64748B))),
+                                  Text(
+                                    '${score.userGrade} • ${score.subjectName}',
+                                    style: TextStyle(
+                                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                                    ),
+                                  ),
                                   const SizedBox(height: 4),
                                   Text(score.lessonTitle, style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF4F46E5))),
                                 ],
@@ -113,10 +155,17 @@ class _AdminScoresScreenState extends ConsumerState<AdminScoresScreen> {
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFF1F5F9),
+                                    color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
                                     borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: isDark ? const Color(0xFF334155) : Colors.transparent),
                                   ),
-                                  child: Text('$percentage%', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF334155))),
+                                  child: Text(
+                                    '$percentage%',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),
+                                    ),
+                                  ),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(dateStr, style: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),

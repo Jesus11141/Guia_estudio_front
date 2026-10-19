@@ -394,6 +394,7 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
   }
 
   Widget _buildGameSelectorCard({
+    required BuildContext context,
     required String type,
     required String title,
     required String subtitle,
@@ -401,6 +402,7 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
     required Color color,
   }) {
     final isSelected = _selectedGameType == type;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       onTap: () {
         setState(() {
@@ -413,15 +415,23 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.12) : Colors.white,
+          color: isSelected
+              ? color.withOpacity(0.12)
+              : (isDark ? const Color(0xFF1E293B) : Colors.white),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? color : Colors.grey.shade200,
+            color: isSelected ? color : (isDark ? const Color(0xFF334155) : Colors.grey.shade200),
             width: isSelected ? 2.5 : 1,
           ),
           boxShadow: isSelected
               ? [BoxShadow(color: color.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 4))]
-              : [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 4, offset: const Offset(0, 2))],
+              : [
+                  BoxShadow(
+                    color: isDark ? Colors.black.withOpacity(0.2) : Colors.black.withOpacity(0.03),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  )
+                ],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -444,12 +454,15 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: isSelected ? color : const Color(0xFF1E293B),
+                    color: isSelected ? color : (isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B)),
                   ),
                 ),
                 Text(
                   subtitle,
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
+                  ),
                 ),
               ],
             ),
@@ -460,10 +473,12 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
   }
 
   Widget _buildImageField({
+    required BuildContext context,
     required TextEditingController controller,
     required String label,
     String? hintText,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final text = controller.text.trim();
     final hasImage = text.isNotEmpty && (text.startsWith('http://') || text.startsWith('https://') || text.startsWith('/uploads/'));
     final previewUrl = text.startsWith('/uploads/') ? baseUrl.replaceAll('/api', '') + text : text;
@@ -507,9 +522,9 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDark ? const Color(0xFF0F172A) : Colors.white,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
+              border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
             ),
             child: Row(
               children: [
@@ -523,20 +538,27 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
                     errorBuilder: (_, __, ___) => Container(
                       width: 54,
                       height: 54,
-                      color: Colors.grey.shade100,
+                      color: isDark ? const Color(0xFF1E293B) : Colors.grey.shade100,
                       child: const Icon(Icons.broken_image, color: Colors.grey),
                     ),
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('✅ Imagen cargada correctamente',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF059669))),
-                      Text('Esta imagen se mostrará a los alumnos al jugar.',
-                          style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                      const Text(
+                        '✅ Imagen cargada correctamente',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF059669)),
+                      ),
+                      Text(
+                        'Esta imagen se mostrará a los alumnos al jugar.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -560,9 +582,10 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
   @override
   Widget build(BuildContext context) {
     final questionsAsync = ref.watch(questionsByTypeProvider(_selectedGameType));
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Center(
@@ -583,18 +606,25 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
                       child: const Icon(Icons.sports_esports_rounded, color: Color(0xFF6366F1), size: 32),
                     ),
                     const SizedBox(width: 16),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Gestión de Juegos Educativos',
-                            style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                            style: TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.bold,
+                              color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                            ),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Text(
                             'Agrega nuevas palabras, imágenes y retos para el salón recreativo "Aprende Jugando"',
-                            style: TextStyle(fontSize: 14, color: Color(0xFF64748B)),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                            ),
                           ),
                         ],
                       ),
@@ -604,14 +634,21 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
                 const SizedBox(height: 24),
 
                 // Selector de Juego
-                const Text('1. Selecciona el juego que deseas enriquecer:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF334155))),
+                Text(
+                  '1. Selecciona el juego que deseas enriquecer:',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),
+                  ),
+                ),
                 const SizedBox(height: 12),
                 Wrap(
                   spacing: 12,
                   runSpacing: 12,
                   children: [
                     _buildGameSelectorCard(
+                      context: context,
                       type: 'SYLLABLE_TRAIN',
                       title: 'El Tren de Sílabas',
                       subtitle: 'Armar palabras en vagones',
@@ -619,6 +656,7 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
                       color: const Color(0xFF8B5CF6),
                     ),
                     _buildGameSelectorCard(
+                      context: context,
                       type: 'MISSING_SYLLABLE',
                       title: 'La Sílaba Perdida',
                       subtitle: 'Completar la sílaba faltante',
@@ -626,6 +664,7 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
                       color: const Color(0xFFEC4899),
                     ),
                     _buildGameSelectorCard(
+                      context: context,
                       type: 'MEMORY_MATCH',
                       title: 'Memorama de Palabras',
                       subtitle: 'Parejas de cartas y memoria',
@@ -633,6 +672,7 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
                       color: const Color(0xFF10B981),
                     ),
                     _buildGameSelectorCard(
+                      context: context,
                       type: 'SENTENCE_BUILDER',
                       title: 'Arma la Oración',
                       subtitle: 'Ordenar frases completas',
@@ -640,6 +680,7 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
                       color: const Color(0xFF0EA5E9),
                     ),
                     _buildGameSelectorCard(
+                      context: context,
                       type: 'FROG_SEQUENCE',
                       title: 'La Rana Saltarina',
                       subtitle: 'Series numéricas y saltos',
@@ -653,7 +694,11 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
                 // Formulario de Creación / Edición
                 Card(
                   elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    side: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(24),
                     child: Column(
@@ -664,7 +709,11 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
                           children: [
                             Text(
                               _editingId == null ? '✨ Crear Nuevo Reto para este Juego' : '✏️ Editando Reto Seleccionado',
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                              ),
                             ),
                             if (_editingId != null)
                               TextButton.icon(
@@ -705,6 +754,7 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
                           ),
                           const SizedBox(height: 16),
                           _buildImageField(
+                            context: context,
                             controller: _trainImageCtrl,
                             label: 'Imagen de apoyo para el tren (opcional)',
                           ),
@@ -752,6 +802,7 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
                           ),
                           const SizedBox(height: 16),
                           _buildImageField(
+                            context: context,
                             controller: _missingImageCtrl,
                             label: 'Imagen ilustrativa (opcional)',
                           ),
@@ -765,6 +816,7 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
                           ),
                           const SizedBox(height: 16),
                           _buildImageField(
+                            context: context,
                             controller: _memoryEmojiOrImageCtrl,
                             label: 'Emoji (ej: 🦁) o Imagen de la carta',
                             hintText: 'Escribe un emoji como 🍎 o sube una imagen con el botón',
@@ -795,6 +847,7 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
                           ),
                           const SizedBox(height: 16),
                           _buildImageField(
+                            context: context,
                             controller: _sentenceImageCtrl,
                             label: 'Imagen contextual para la oración (opcional)',
                           ),
@@ -875,9 +928,13 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Retos Existentes en este Juego',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                      ),
                     ),
                     questionsAsync.maybeWhen(
                       data: (list) => Container(
@@ -904,22 +961,29 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
                         padding: const EdgeInsets.all(40),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: isDark ? const Color(0xFF1E293B) : Colors.white,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.grey.shade200),
+                          border: Border.all(color: isDark ? const Color(0xFF334155) : Colors.grey.shade200),
                         ),
                         child: Column(
                           children: [
-                            Icon(Icons.sports_esports_outlined, size: 56, color: Colors.grey.shade300),
+                            Icon(Icons.sports_esports_outlined, size: 56, color: isDark ? const Color(0xFF475569) : Colors.grey.shade300),
                             const SizedBox(height: 12),
-                            const Text(
+                            Text(
                               'Aún no has agregado retos personalizados a este juego.',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF64748B)),
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF64748B),
+                              ),
                             ),
                             const SizedBox(height: 6),
-                            const Text(
+                            Text(
                               '¡Usa el formulario de arriba para añadir tus propias palabras o imágenes!',
-                              style: TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF94A3B8),
+                              ),
                             ),
                           ],
                         ),
@@ -956,8 +1020,12 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
 
                         return Card(
                           elevation: 1,
+                          color: isDark ? const Color(0xFF1E293B) : Colors.white,
                           margin: const EdgeInsets.only(bottom: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            side: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+                          ),
                           child: ListTile(
                             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                             leading: imgUrl != null && imgUrl.isNotEmpty
@@ -977,8 +1045,21 @@ class _AdminGamesViewState extends ConsumerState<AdminGamesView> {
                                     backgroundColor: const Color(0xFF6366F1).withOpacity(0.1),
                                     child: const Icon(Icons.star, color: Color(0xFF6366F1)),
                                   ),
-                            title: Text(mainTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                            subtitle: Text(subTitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+                            title: Text(
+                              mainTitle,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                              ),
+                            ),
+                            subtitle: Text(
+                              subTitle,
+                              style: TextStyle(
+                                color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
+                                fontSize: 13,
+                              ),
+                            ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [

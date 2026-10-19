@@ -259,15 +259,23 @@ class _RewardsStoreScreenState extends ConsumerState<RewardsStoreScreen> {
   Widget build(BuildContext context) {
     final user = ref.watch(authProvider);
     final equippedItem = AvatarCatalog.find(user?.avatar);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+          foregroundColor: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
           elevation: 0,
-          title: const Text('Tienda de Premios 🎁', style: TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF1E293B))),
+          title: Text(
+            'Tienda de Premios 🎁',
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+            ),
+          ),
           centerTitle: false,
           actions: [
             if (user != null)
@@ -275,7 +283,11 @@ class _RewardsStoreScreenState extends ConsumerState<RewardsStoreScreen> {
                 margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: [Color(0xFFFEF3C7), Color(0xFFFDE68A)]),
+                  gradient: LinearGradient(
+                    colors: isDark
+                        ? [const Color(0xFF78350F), const Color(0xFF92400E)]
+                        : [const Color(0xFFFEF3C7), const Color(0xFFFDE68A)],
+                  ),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: const Color(0xFFF59E0B).withOpacity(0.5)),
                   boxShadow: [
@@ -289,19 +301,23 @@ class _RewardsStoreScreenState extends ConsumerState<RewardsStoreScreen> {
                     const SizedBox(width: 6),
                     Text(
                       '${user.stars}',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF92400E)),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: isDark ? const Color(0xFFFDE68A) : const Color(0xFF92400E),
+                      ),
                     ),
                   ],
                 ),
               ),
           ],
-          bottom: const TabBar(
-            labelColor: Color(0xFF4F46E5),
-            unselectedLabelColor: Color(0xFF64748B),
-            indicatorColor: Color(0xFF4F46E5),
+          bottom: TabBar(
+            labelColor: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5),
+            unselectedLabelColor: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+            indicatorColor: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5),
             indicatorWeight: 3,
-            labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-            tabs: [
+            labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            tabs: const [
               Tab(icon: Icon(Icons.face_retouching_natural_rounded), text: 'Avatares Mágicos 🎭'),
               Tab(icon: Icon(Icons.card_giftcard_rounded), text: 'Premios Escolares 🎁'),
             ],
@@ -311,8 +327,8 @@ class _RewardsStoreScreenState extends ConsumerState<RewardsStoreScreen> {
           children: [
             TabBarView(
               children: [
-                _buildAvatarsTab(user, equippedItem),
-                _buildPhysicalRewardsTab(),
+                _buildAvatarsTab(user, equippedItem, isDark),
+                _buildPhysicalRewardsTab(isDark),
               ],
             ),
             if (_showConfetti)
@@ -325,7 +341,7 @@ class _RewardsStoreScreenState extends ConsumerState<RewardsStoreScreen> {
     );
   }
 
-  Widget _buildAvatarsTab(User? user, AvatarItem equippedItem) {
+  Widget _buildAvatarsTab(User? user, AvatarItem equippedItem, bool isDark) {
     final unlockedList = user?.unlockedAvatars ?? [];
     final totalAvatars = AvatarCatalog.all.length;
     final unlockedCount = AvatarCatalog.all.where((a) => a.cost == 0 || unlockedList.contains(a.id)).length;
@@ -402,14 +418,21 @@ class _RewardsStoreScreenState extends ConsumerState<RewardsStoreScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
+          Text(
             '🌟 Desbloquea y Colecciona Avatares',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF1E293B)),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+            ),
           ),
           const SizedBox(height: 4),
-          const Text(
+          Text(
             '¡Usa tus estrellas ganadas en los juegos y cuestionarios para conseguir nuevos personajes!',
-            style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+            style: TextStyle(
+              fontSize: 13,
+              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+            ),
           ),
           const SizedBox(height: 16),
 
@@ -441,14 +464,14 @@ class _RewardsStoreScreenState extends ConsumerState<RewardsStoreScreen> {
 
                   return Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: isDark ? const Color(0xFF1E293B) : Colors.white,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: isEquipped
                             ? const Color(0xFF10B981)
-                            : isUnlocked
-                                ? const Color(0xFFE2E8F0)
-                                : const Color(0xFFCBD5E1),
+                            : (isDark
+                                ? const Color(0xFF334155)
+                                : (isUnlocked ? const Color(0xFFE2E8F0) : const Color(0xFFCBD5E1))),
                         width: isEquipped ? 2.5 : 1,
                       ),
                       boxShadow: [
@@ -546,14 +569,22 @@ class _RewardsStoreScreenState extends ConsumerState<RewardsStoreScreen> {
                             children: [
                               Text(
                                 avatar.name,
-                                style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: Color(0xFF1E293B)),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 14,
+                                  color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                                ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 2),
                               Text(
                                 avatar.title,
-                                style: TextStyle(fontSize: 11, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
+                                  fontWeight: FontWeight.w500,
+                                ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -621,7 +652,7 @@ class _RewardsStoreScreenState extends ConsumerState<RewardsStoreScreen> {
     );
   }
 
-  Widget _buildPhysicalRewardsTab() {
+  Widget _buildPhysicalRewardsTab(bool isDark) {
     return FutureBuilder(
       future: ref.read(dioProvider).get('/rewards'),
       builder: (context, snapshot) {
@@ -636,9 +667,19 @@ class _RewardsStoreScreenState extends ConsumerState<RewardsStoreScreen> {
               children: [
                 const Icon(Icons.card_giftcard, size: 64, color: Color(0xFFCBD5E1)),
                 const SizedBox(height: 12),
-                const Text('Aún no hay premios escolares.', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+                Text(
+                  'Aún no hay premios escolares.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF64748B),
+                  ),
+                ),
                 const SizedBox(height: 4),
-                const Text('¡Pídele a tu profesor que agregue premios a la tienda!', style: TextStyle(color: Color(0xFF94A3B8))),
+                Text(
+                  '¡Pídele a tu profesor que agregue premios a la tienda!',
+                  style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF94A3B8)),
+                ),
               ],
             ),
           );
@@ -657,7 +698,11 @@ class _RewardsStoreScreenState extends ConsumerState<RewardsStoreScreen> {
             final r = list[index];
             return Card(
               elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              color: isDark ? const Color(0xFF1E293B) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+              ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -677,7 +722,7 @@ class _RewardsStoreScreenState extends ConsumerState<RewardsStoreScreen> {
                                 return const Center(child: CircularProgressIndicator());
                               },
                               errorBuilder: (c, err, stack) => Container(
-                                color: const Color(0xFFFEF3C7),
+                                color: isDark ? const Color(0xFF451A03) : const Color(0xFFFEF3C7),
                                 child: const Center(
                                   child: Icon(Icons.card_giftcard_rounded, size: 54, color: Color(0xFFF59E0B)),
                                 ),
@@ -688,9 +733,9 @@ class _RewardsStoreScreenState extends ConsumerState<RewardsStoreScreen> {
                       }
                       return Expanded(
                         child: Container(
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFFEF3C7),
-                            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                          decoration: BoxDecoration(
+                            color: isDark ? const Color(0xFF451A03) : const Color(0xFFFEF3C7),
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                           ),
                           child: const Center(
                             child: Text('🎁', style: TextStyle(fontSize: 48)),
@@ -703,7 +748,17 @@ class _RewardsStoreScreenState extends ConsumerState<RewardsStoreScreen> {
                     padding: const EdgeInsets.all(12.0),
                     child: Column(
                       children: [
-                        Text(r.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
+                        Text(
+                          r.name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         const SizedBox(height: 4),
                         Text('${r.cost} 🌟', style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.w900, fontSize: 18)),
                         const SizedBox(height: 8),

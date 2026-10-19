@@ -187,6 +187,8 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
     state = nextIsDark ? ThemeMode.dark : ThemeMode.light;
   }
 
+  Future<void> toggle() => toggleTheme();
+
   Future<void> setTheme(bool isDark) async {
     final prefs = ref.read(sharedPrefsProvider);
     await prefs.setBool('is_dark_mode', isDark);

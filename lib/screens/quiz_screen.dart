@@ -179,15 +179,22 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   @override
   Widget build(BuildContext context) {
     final title = widget.customTitle ?? (widget.lesson != null ? 'Práctica: ${widget.lesson!.title}' : 'Práctica Libre');
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (widget.customQuestions != null) {
       return Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
           elevation: 0,
-          iconTheme: const IconThemeData(color: Color(0xFF1E293B)),
-          title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF1E293B))),
+          iconTheme: IconThemeData(color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B)),
+          title: Text(
+            title,
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+            ),
+          ),
           centerTitle: true,
         ),
         body: _buildQuestionsBody(context, widget.customQuestions!),
@@ -197,12 +204,18 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     final questionsAsync = ref.watch(questionsProvider(widget.lesson!.id));
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC), // Slate 50
+      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC), // Slate 50 / Slate 900
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Color(0xFF1E293B)),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF1E293B))),
+        iconTheme: IconThemeData(color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B)),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+          ),
+        ),
         centerTitle: true,
       ),
       body: questionsAsync.when(
@@ -214,95 +227,120 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   }
 
   Widget _buildQuestionsBody(BuildContext context, List<Question> questions) {
-          if (questions.isEmpty) {
-            return const Center(
-              child: Text('Aún no hay ejercicios para esta lección.', style: TextStyle(fontSize: 18, color: Colors.grey)),
-            );
-          }
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-          if (_currentIndex >= questions.length) {
-            // Pantalla de resultados con confeti festivo
-            return ConfettiCelebration(
-              isActive: true,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(32),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color(0xFFFFFBEB),
-                        border: Border.all(color: const Color(0xFFF59E0B), width: 4),
-                        boxShadow: [
-                          BoxShadow(color: const Color(0xFFF59E0B).withOpacity(0.3), blurRadius: 25, offset: const Offset(0, 8))
-                        ],
-                      ),
-                      child: const Icon(Icons.emoji_events_rounded, size: 84, color: Color(0xFFF59E0B)),
-                    ),
-                    const SizedBox(height: 32),
-                    const Text('¡Excelente Trabajo! 🎉', style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: Color(0xFF1E293B))),
-                    const SizedBox(height: 16),
-                    Text('Puntuación: $_score / ${questions.length}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: Color(0xFF475569))),
-                    const SizedBox(height: 48),
-                    ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF4F46E5),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 20),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        elevation: 0,
-                      ),
-                      child: Text(widget.customTitle != null ? '¡Terminar Juego! 🌟' : 'Volver al Temario', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    )
+    if (questions.isEmpty) {
+      return Center(
+        child: Text(
+          'Aún no hay ejercicios para esta lección.',
+          style: TextStyle(
+            fontSize: 18,
+            color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
+          ),
+        ),
+      );
+    }
+
+    if (_currentIndex >= questions.length) {
+      // Pantalla de resultados con confeti festivo
+      return ConfettiCelebration(
+        isActive: true,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(32),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDark ? const Color(0xFF451A03) : const Color(0xFFFFFBEB),
+                  border: Border.all(color: const Color(0xFFF59E0B), width: 4),
+                  boxShadow: [
+                    BoxShadow(color: const Color(0xFFF59E0B).withOpacity(0.3), blurRadius: 25, offset: const Offset(0, 8))
                   ],
                 ),
+                child: const Icon(Icons.emoji_events_rounded, size: 84, color: Color(0xFFF59E0B)),
               ),
-            );
-          }
+              const SizedBox(height: 32),
+              Text(
+                '¡Excelente Trabajo! 🎉',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w900,
+                  color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Puntuación: $_score / ${questions.length}',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF475569),
+                ),
+              ),
+              const SizedBox(height: 48),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF4F46E5),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 20),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  elevation: 0,
+                ),
+                child: Text(widget.customTitle != null ? '¡Terminar Juego! 🌟' : 'Volver al Temario', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              )
+            ],
+          ),
+        ),
+      );
+    }
 
-          final question = questions[_currentIndex];
-          final isCorrect = _selectedOption == question.correctOption;
-          final String? bgImageUrl = question.metadata?['imageUrl'];
+    final question = questions[_currentIndex];
+    final isCorrect = _selectedOption == question.correctOption;
+    final String? bgImageUrl = question.metadata?['imageUrl'];
 
-          return Stack(
-            children: [
-              if (bgImageUrl != null && bgImageUrl.toString().isNotEmpty)
-                Positioned.fill(
-                  child: Opacity(
-                    opacity: 0.15,
-                    child: Image.network(
-                      bgImageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (c, e, s) => const SizedBox.shrink(),
+    return Stack(
+      children: [
+        if (bgImageUrl != null && bgImageUrl.toString().isNotEmpty)
+          Positioned.fill(
+            child: Opacity(
+              opacity: isDark ? 0.08 : 0.15,
+              child: Image.network(
+                bgImageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (c, e, s) => const SizedBox.shrink(),
+              ),
+            ),
+          ),
+        Column(
+          children: [
+            // Progress indicator fixed at top
+            Container(
+              color: isDark ? const Color(0xFF1E293B) : Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.close, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: LinearProgressIndicator(
+                        value: (_currentIndex) / questions.length,
+                        backgroundColor: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
+                        valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF10B981)),
+                        minHeight: 16,
+                      ),
                     ),
                   ),
-                ),
-              Column(
-                children: [
-              // Progress indicator fixed at top
-              Container(
-                color: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                child: Row(
-                  children: [
-                    IconButton(icon: const Icon(Icons.close, color: Colors.grey), onPressed: () => Navigator.pop(context)),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: LinearProgressIndicator(
-                          value: (_currentIndex) / questions.length,
-                          backgroundColor: const Color(0xFFF1F5F9),
-                          valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF10B981)),
-                          minHeight: 16,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                ],
               ),
+            ),
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40),
@@ -317,8 +355,17 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                             children: [
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                decoration: BoxDecoration(color: const Color(0xFFE0E7FF), borderRadius: BorderRadius.circular(20)),
-                                child: Text('Pregunta ${_currentIndex + 1} de ${questions.length}', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF4F46E5))),
+                                decoration: BoxDecoration(
+                                  color: isDark ? const Color(0xFF312E81).withOpacity(0.4) : const Color(0xFFE0E7FF),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  'Pregunta ${_currentIndex + 1} de ${questions.length}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5),
+                                  ),
+                                ),
                               ),
                               if (_hasAnswered && question.explanation != null && question.explanation!.isNotEmpty)
                                 IconButton(
@@ -331,7 +378,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                                           children: [
                                             Icon(Icons.lightbulb, color: Color(0xFFF59E0B)),
                                             SizedBox(width: 8),
-                                            Text('GuÃƒÆ’Ã‚Â­a de Estudio', style: TextStyle(color: Color(0xFFB45309), fontWeight: FontWeight.bold)),
+                                            Text('Guía de Estudio', style: TextStyle(color: Color(0xFFB45309), fontWeight: FontWeight.bold)),
                                           ],
                                         ),
                                         content: Text(question.explanation!, style: const TextStyle(fontSize: 16, height: 1.5)),
@@ -363,7 +410,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                                       hasAnswered: _hasAnswered,
                                       isCorrect: _hasAnswered && _selectedOption == question.correctOption,
                                     )
-                                                                                                      else if (question.type == 'MISSING_SYLLABLE')
+                                  else if (question.type == 'MISSING_SYLLABLE')
                                     MissingSyllableWidget(
                                       question: question,
                                       hasAnswered: _hasAnswered,
@@ -406,7 +453,12 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                                         Expanded(
                                           child: Text(
                                             question.questionText,
-                                            style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Color(0xFF0F172A), height: 1.3),
+                                            style: TextStyle(
+                                              fontSize: 26,
+                                              fontWeight: FontWeight.w800,
+                                              color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
+                                              height: 1.3,
+                                            ),
                                           ),
                                         ),
                                         IconButton(
@@ -430,24 +482,24 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                                   bool isThisSelected = _selectedOption == opt;
                                   bool isThisCorrect = opt == question.correctOption;
                                   
-                                  Color bgColor = Colors.white;
-                                  Color borderColor = const Color(0xFFE2E8F0);
-                                  Color textColor = const Color(0xFF334155);
+                                  Color bgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+                                  Color borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+                                  Color textColor = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF334155);
                                   
                                   if (_hasAnswered) {
                                     if (isThisCorrect) {
-                                      bgColor = const Color(0xFFD1FAE5);
+                                      bgColor = isDark ? const Color(0xFF064E3B) : const Color(0xFFD1FAE5);
                                       borderColor = const Color(0xFF10B981);
-                                      textColor = const Color(0xFF065F46);
+                                      textColor = isDark ? const Color(0xFF86EFAC) : const Color(0xFF065F46);
                                     } else if (isThisSelected && !isCorrect) {
-                                      bgColor = const Color(0xFFFEE2E2);
+                                      bgColor = isDark ? const Color(0xFF450A0A) : const Color(0xFFFEE2E2);
                                       borderColor = const Color(0xFFEF4444);
-                                      textColor = const Color(0xFF991B1B);
+                                      textColor = isDark ? const Color(0xFFFCA5A5) : const Color(0xFF991B1B);
                                     }
                                   } else if (isThisSelected) {
-                                    bgColor = const Color(0xFFEEF2FF);
+                                    bgColor = isDark ? const Color(0xFF312E81) : const Color(0xFFEEF2FF);
                                     borderColor = const Color(0xFF4F46E5);
-                                    textColor = const Color(0xFF312E81);
+                                    textColor = isDark ? Colors.white : const Color(0xFF312E81);
                                   }
                                   
                                   return GestureDetector(
@@ -473,13 +525,17 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                                                   ? const Color(0xFF10B981) 
                                                   : _hasAnswered && isThisSelected && !isCorrect
                                                       ? const Color(0xFFEF4444)
-                                                      : (isThisSelected ? const Color(0xFF4F46E5) : const Color(0xFFF1F5F9)),
+                                                      : (isThisSelected
+                                                          ? const Color(0xFF4F46E5)
+                                                          : (isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9))),
                                               borderRadius: BorderRadius.circular(10),
                                             ),
                                             child: Center(
                                               child: Text(opt, style: TextStyle(
                                                 fontWeight: FontWeight.w900, 
-                                                color: isThisSelected || (_hasAnswered && isThisCorrect) ? Colors.white : const Color(0xFF64748B)
+                                                color: isThisSelected || (_hasAnswered && isThisCorrect)
+                                                    ? Colors.white
+                                                    : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
                                               )),
                                             ),
                                           ),
@@ -551,8 +607,9 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
               // Bottom Action Bar
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, -4))]
+                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                  border: Border(top: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
+                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(isDark ? 0.2 : 0.05), blurRadius: 20, offset: const Offset(0, -4))]
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                 child: Center(
@@ -565,14 +622,18 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                                 flex: 5,
                                 child: OutlinedButton.icon(
                                   onPressed: () => _showAiExplanation(question),
-                                  icon: const Icon(Icons.auto_awesome_rounded, color: Color(0xFF7C3AED), size: 20),
-                                  label: const Text(
+                                  icon: Icon(Icons.auto_awesome_rounded, color: isDark ? const Color(0xFFDDD6FE) : const Color(0xFF7C3AED), size: 20),
+                                  label: Text(
                                     '¿Por qué? Explicación IA 💡',
-                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF7C3AED)),
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800,
+                                      color: isDark ? const Color(0xFFDDD6FE) : const Color(0xFF7C3AED),
+                                    ),
                                   ),
                                   style: OutlinedButton.styleFrom(
-                                    side: const BorderSide(color: Color(0xFF8B5CF6), width: 2),
-                                    backgroundColor: const Color(0xFFFAF5FF),
+                                    side: BorderSide(color: isDark ? const Color(0xFFA78BFA) : const Color(0xFF8B5CF6), width: 2),
+                                    backgroundColor: isDark ? const Color(0xFF312E81).withOpacity(0.4) : const Color(0xFFFAF5FF),
                                     padding: const EdgeInsets.symmetric(vertical: 20),
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                                   ),

@@ -308,26 +308,27 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
           elevation: 0,
-          title: const Row(
+          title: Row(
             children: [
-              Text('🎁 ', style: TextStyle(fontSize: 22)),
-              Text('Administrar Premios y Canjes', style: TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF1E293B))),
+              const Text('🎁 ', style: TextStyle(fontSize: 22)),
+              Text('Administrar Premios y Canjes', style: TextStyle(fontWeight: FontWeight.w900, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
             ],
           ),
-          bottom: const TabBar(
-            labelColor: Color(0xFF4F46E5),
-            unselectedLabelColor: Color(0xFF64748B),
-            indicatorColor: Color(0xFF4F46E5),
+          bottom: TabBar(
+            labelColor: const Color(0xFF4F46E5),
+            unselectedLabelColor: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+            indicatorColor: const Color(0xFF4F46E5),
             indicatorWeight: 3,
-            labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-            tabs: [
+            labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            tabs: const [
               Tab(icon: Icon(Icons.inventory_2_rounded), text: 'Premios de la Tienda'),
               Tab(icon: Icon(Icons.shopping_bag_rounded), text: 'Canjes de Estudiantes'),
             ],
@@ -377,12 +378,16 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
   }
 
   Widget _buildFormCard() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isEditing = _editingReward != null;
     final previewUrl = resolveImageUrl(_imageCtrl.text.trim());
 
     return Card(
       elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -403,7 +408,7 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w900,
-                      color: isEditing ? const Color(0xFFB45309) : const Color(0xFF1E293B),
+                      color: isEditing ? const Color(0xFFF59E0B) : (isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B)),
                     ),
                   ),
                 ),
@@ -420,22 +425,22 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
                 padding: const EdgeInsets.only(top: 4, bottom: 8),
                 child: Text(
                   'Modificando: "${_editingReward!.name}"',
-                  style: const TextStyle(fontSize: 12, color: Color(0xFF64748B), fontStyle: FontStyle.italic),
+                  style: TextStyle(fontSize: 12, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B), fontStyle: FontStyle.italic),
                 ),
               ),
             const Divider(height: 20),
 
             // Nombre
-            const Text('Nombre del Premio', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF334155))),
+            Text('Nombre del Premio', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155))),
             const SizedBox(height: 6),
             TextField(
               controller: _nameCtrl,
               decoration: InputDecoration(
                 hintText: 'Ej. Huevo Kinder, Set de Plastilinas...',
                 filled: true,
-                fillColor: const Color(0xFFF8FAFC),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+                fillColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
                 focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF4F46E5), width: 2)),
                 prefixIcon: const Icon(Icons.card_giftcard_rounded, color: Color(0xFF64748B)),
               ),
@@ -443,7 +448,7 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
             const SizedBox(height: 14),
 
             // Costo
-            const Text('Costo en Estrellas', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF334155))),
+            Text('Costo en Estrellas', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155))),
             const SizedBox(height: 6),
             TextField(
               controller: _costCtrl,
@@ -451,9 +456,9 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
               decoration: InputDecoration(
                 hintText: 'Ej. 25',
                 filled: true,
-                fillColor: const Color(0xFFF8FAFC),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+                fillColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
                 focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF4F46E5), width: 2)),
                 prefixIcon: const Icon(Icons.star_rounded, color: Color(0xFFF59E0B)),
                 suffixText: '🌟',
@@ -462,7 +467,7 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
             const SizedBox(height: 14),
 
             // Foto / Imagen del premio
-            const Text('Foto del Premio', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF334155))),
+            Text('Foto del Premio', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155))),
             const SizedBox(height: 6),
 
             // Preview Box
@@ -470,9 +475,9 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
+                color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
               ),
               child: Column(
                 children: [
@@ -536,8 +541,8 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
                         children: [
                           Icon(Icons.image_outlined, size: 40, color: Colors.grey.shade400),
                           const SizedBox(height: 6),
-                          Text('Sin foto seleccionada', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
-                          Text('Se mostrará un icono de regalo 🎁', style: TextStyle(color: Colors.grey.shade400, fontSize: 11)),
+                          Text('Sin foto seleccionada', style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600, fontSize: 12)),
+                          Text('Se mostrará un icono de regalo 🎁', style: TextStyle(color: isDark ? const Color(0xFF64748B) : Colors.grey.shade400, fontSize: 11)),
                         ],
                       ),
                     ),
@@ -552,8 +557,8 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
                           : const Icon(Icons.cloud_upload_rounded, size: 18),
                       label: Text(_isUploadingImage ? 'Subiendo imagen...' : 'Subir Foto desde mi dispositivo'),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF4F46E5),
-                        side: const BorderSide(color: Color(0xFF4F46E5)),
+                        foregroundColor: isDark ? const Color(0xFF818CF8) : const Color(0xFF4F46E5),
+                        side: BorderSide(color: isDark ? const Color(0xFF818CF8) : const Color(0xFF4F46E5)),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         padding: const EdgeInsets.symmetric(vertical: 10),
                       ),
@@ -574,9 +579,9 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
                 hintText: 'https://... o /uploads/...',
                 isDense: true,
                 filled: true,
-                fillColor: const Color(0xFFF8FAFC),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+                fillColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
                 focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFF4F46E5))),
                 prefixIcon: const Icon(Icons.link_rounded, size: 18, color: Color(0xFF64748B)),
               ),
@@ -612,7 +617,7 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
                 width: double.infinity,
                 child: TextButton(
                   onPressed: _cancelEdit,
-                  child: const Text('Cancelar Edición', style: TextStyle(color: Color(0xFF64748B))),
+                  child: Text('Cancelar Edición', style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B))),
                 ),
               ),
             ],
@@ -623,6 +628,7 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
   }
 
   Widget _buildRewardsList() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return FutureBuilder(
       future: ref.read(dioProvider).get('/rewards'),
       builder: (context, snapshot) {
@@ -641,11 +647,11 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.card_giftcard_rounded, size: 64, color: Colors.grey.shade300),
+                  Icon(Icons.card_giftcard_rounded, size: 64, color: isDark ? const Color(0xFF334155) : Colors.grey.shade300),
                   const SizedBox(height: 12),
-                  const Text('No hay premios registrados todavía.', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+                  Text('No hay premios registrados todavía.', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B))),
                   const SizedBox(height: 4),
-                  const Text('Usa el formulario para crear el primer premio de la tienda.', style: TextStyle(color: Color(0xFF94A3B8))),
+                  Text('Usa el formulario para crear el primer premio de la tienda.', style: TextStyle(color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8))),
                 ],
               ),
             ),
@@ -654,7 +660,10 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
 
         return Card(
           elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -665,7 +674,7 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
                   children: [
                     Text(
                       'Premios en Catálogo (${list.length})',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF1E293B)),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B)),
                     ),
                     IconButton(
                       icon: const Icon(Icons.refresh_rounded, color: Color(0xFF4F46E5)),
@@ -698,7 +707,7 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 15,
-                            color: isCurrentlyEditing ? const Color(0xFF92400E) : const Color(0xFF1E293B),
+                            color: isCurrentlyEditing ? const Color(0xFFF59E0B) : (isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B)),
                           ),
                         ),
                         subtitle: Row(
@@ -706,9 +715,9 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFFEF3C7),
+                                color: isDark ? const Color(0xFF451A03) : const Color(0xFFFEF3C7),
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: const Color(0xFFFDE68A)),
+                                border: Border.all(color: isDark ? const Color(0xFF78350F) : const Color(0xFFFDE68A)),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -717,7 +726,7 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
                                   const SizedBox(width: 4),
                                   Text(
                                     '${r.cost} estrellas',
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Color(0xFF92400E)),
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: isDark ? const Color(0xFFFCD34D) : const Color(0xFF92400E)),
                                   ),
                                 ],
                               ),
@@ -766,6 +775,7 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
   }
 
   Widget _buildClaimsTab() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return FutureBuilder(
       future: ref.read(dioProvider).get('/rewards/claims'),
       builder: (context, snapshot) {
@@ -782,9 +792,9 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.shopping_bag_outlined, size: 64, color: Colors.grey.shade300),
+                Icon(Icons.shopping_bag_outlined, size: 64, color: isDark ? const Color(0xFF334155) : Colors.grey.shade300),
                 const SizedBox(height: 12),
-                const Text('Aún no hay canjes solicitados por estudiantes.', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+                Text('Aún no hay canjes solicitados por estudiantes.', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B))),
               ],
             ),
           );
@@ -800,9 +810,9 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                 ),
                 child: Row(
                   children: [
@@ -811,7 +821,7 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
                     Expanded(
                       child: Text(
                         'Total de canjes: ${list.length} | Pendientes por entregar: $pendingCount',
-                        style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B)),
                       ),
                     ),
                     IconButton(
@@ -826,7 +836,10 @@ class _AdminRewardsScreenState extends ConsumerState<AdminRewardsScreen> {
               Expanded(
                 child: Card(
                   elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+                  ),
                   child: ListView.separated(
                     padding: const EdgeInsets.all(12),
                     itemCount: list.length,

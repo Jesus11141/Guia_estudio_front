@@ -25,10 +25,13 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     final user = ref.watch(authProvider);
     final isSuperAdmin = user?.role == 'SUPER_ADMIN';
     final orgName = isSuperAdmin ? 'Matriz Global' : (user?.institution?.name ?? 'Unidad Educativa');
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
       appBar: AppBar(
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+        foregroundColor: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
         title: Row(
           children: [
             if (user?.institution?.logoUrl != null && !isSuperAdmin) ...[
@@ -39,6 +42,14 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
           ]
         ),
         actions: [
+          IconButton(
+            icon: Icon(
+              isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+              color: isDark ? Colors.amber[300] : const Color(0xFF64748B),
+            ),
+            onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
+            tooltip: isDark ? 'Modo Claro' : 'Modo Noche (Slate Dark)',
+          ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())),
@@ -58,7 +69,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
         children: [
           Container(
             width: 280,
-            color: Colors.white,
+            color: isDark ? const Color(0xFF1E293B) : Colors.white,
             child: Column(
               children: [
                 const SizedBox(height: 24),
@@ -73,7 +84,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
               ],
             ),
           ),
-          const VerticalDivider(thickness: 1, width: 1, color: Color(0xFFE2E8F0)),
+          VerticalDivider(thickness: 1, width: 1, color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
           Expanded(
             child: _getContentView(isSuperAdmin),
           )
@@ -97,19 +108,21 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
   }
 
   Widget _buildNavItem(IconData icon, String title, int index) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isSelected = _tabIndex == index;
+    final unselectedColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
     return InkWell(
       onTap: () => setState(() => _tabIndex = index),
       child: Container(
-        color: isSelected ? const Color(0xFF4F46E5).withOpacity(0.1) : Colors.transparent,
+        color: isSelected ? const Color(0xFF4F46E5).withOpacity(isDark ? 0.25 : 0.1) : Colors.transparent,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: Row(
           children: [
-            Icon(icon, color: isSelected ? const Color(0xFF4F46E5) : const Color(0xFF64748B)),
+            Icon(icon, color: isSelected ? const Color(0xFF818CF8) : unselectedColor),
             const SizedBox(width: 16),
             Expanded(
               child: Text(title, style: TextStyle(
-                color: isSelected ? const Color(0xFF4F46E5) : const Color(0xFF64748B),
+                color: isSelected ? (isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5)) : unselectedColor,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               )),
             ),
@@ -136,6 +149,7 @@ class _AdminUsersViewState extends ConsumerState<AdminUsersView> {
   @override
   Widget build(BuildContext context) {
     final usersAsync = ref.watch(usersProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
       padding: const EdgeInsets.all(32.0),
@@ -145,7 +159,7 @@ class _AdminUsersViewState extends ConsumerState<AdminUsersView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Usuarios del Sistema', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+              Text('Usuarios del Sistema', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
               ElevatedButton.icon(
                 onPressed: _openCreateUserDialog,
                 icon: const Icon(Icons.add),
@@ -164,9 +178,10 @@ class _AdminUsersViewState extends ConsumerState<AdminUsersView> {
               data: (users) {
                 return Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
                     borderRadius: BorderRadius.circular(16),
-                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 15, offset: const Offset(0, 8))],
+                    border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(isDark ? 0.3 : 0.05), blurRadius: 15, offset: const Offset(0, 8))],
                   ),
                   child: ListView.separated(
                     itemCount: users.length,
@@ -387,22 +402,27 @@ class _CreateUserDialogState extends ConsumerState<CreateUserDialog> {
                   error: (e,st) => const Text('Error grados'),
                 ),
                 const SizedBox(height: 16),
-                Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8FAFC),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                  ),
-                  child: SwitchListTile(
-                    title: const Text('¿Incluir Juegos Educativos?', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                    subtitle: Text(
-                      _hasGames ? 'Activado: el alumno verá "Aprende Jugando"' : 'Desactivado: el alumno solo verá Mi Tablero y Biblioteca',
-                      style: TextStyle(fontSize: 12, color: _hasGames ? const Color(0xFF16A34A) : const Color(0xFF64748B)),
-                    ),
-                    value: _hasGames,
-                    activeColor: const Color(0xFF4F46E5),
-                    onChanged: (val) => setState(() => _hasGames = val),
-                  ),
+                Builder(
+                  builder: (context) {
+                    final isDark = Theme.of(context).brightness == Brightness.dark;
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+                      ),
+                      child: SwitchListTile(
+                        title: const Text('¿Incluir Juegos Educativos?', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                        subtitle: Text(
+                          _hasGames ? 'Activado: el alumno verá "Aprende Jugando"' : 'Desactivado: el alumno solo verá Mi Tablero y Biblioteca',
+                          style: TextStyle(fontSize: 12, color: _hasGames ? const Color(0xFF16A34A) : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B))),
+                        ),
+                        value: _hasGames,
+                        activeColor: const Color(0xFF4F46E5),
+                        onChanged: (val) => setState(() => _hasGames = val),
+                      ),
+                    );
+                  },
                 ),
               ]
             ],
@@ -450,20 +470,26 @@ class _AdminGradesViewState extends ConsumerState<AdminGradesView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.all(32.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Gestionar Grados', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+          Text('Gestionar Grados', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
           const SizedBox(height: 32),
           Container(
             padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 15, offset: const Offset(0, 8))]),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E293B) : Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(isDark ? 0.3 : 0.05), blurRadius: 15, offset: const Offset(0, 8))],
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Crear Nuevo Grado', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text('Crear Nuevo Grado', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
                 const SizedBox(height: 16),
                 TextField(controller: _nameCtrl, decoration: const InputDecoration(labelText: 'Nombre del Grado')),
                 const SizedBox(height: 16),
@@ -478,7 +504,7 @@ class _AdminGradesViewState extends ConsumerState<AdminGradesView> {
             ),
           ),
           const SizedBox(height: 32),
-          const Text('Grados Existentes', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text('Grados Existentes', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
           const SizedBox(height: 16),
           Expanded(
             child: Consumer(
@@ -564,6 +590,7 @@ class _AdminSubjectsViewState extends ConsumerState<AdminSubjectsView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final gradesAsync = ref.watch(gradesProvider);
 
     return Padding(
@@ -571,15 +598,20 @@ class _AdminSubjectsViewState extends ConsumerState<AdminSubjectsView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Gestionar Materias', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+          Text('Gestionar Materias', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
           const SizedBox(height: 32),
           Container(
             padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 15, offset: const Offset(0, 8))]),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E293B) : Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(isDark ? 0.3 : 0.05), blurRadius: 15, offset: const Offset(0, 8))],
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Crear Nueva Materia', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text('Crear Nueva Materia', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
                 const SizedBox(height: 16),
                 TextField(controller: _nameCtrl, decoration: const InputDecoration(labelText: 'Nombre de la Materia')),
                 const SizedBox(height: 16),
@@ -603,7 +635,7 @@ class _AdminSubjectsViewState extends ConsumerState<AdminSubjectsView> {
             ),
           ),
           const SizedBox(height: 32),
-          const Text('Materias Existentes', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text('Materias Existentes', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
           const SizedBox(height: 16),
           Expanded(
             child: gradesAsync.when(
@@ -732,6 +764,7 @@ class _AdminLessonsViewState extends ConsumerState<AdminLessonsView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final gradesAsync = ref.watch(gradesProvider);
     final subjectsAsync = _selectedGradeId != null ? ref.watch(subjectsProvider(_selectedGradeId!)) : const AsyncValue.data(<Subject>[]);
 
@@ -740,18 +773,23 @@ class _AdminLessonsViewState extends ConsumerState<AdminLessonsView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Gestionar Bloques/Trimestres', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+          Text('Gestionar Bloques/Trimestres', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
           const SizedBox(height: 32),
           Container(
             padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 15, offset: const Offset(0, 8))]),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E293B) : Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(isDark ? 0.3 : 0.05), blurRadius: 15, offset: const Offset(0, 8))],
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(_editingId == null ? 'Nuevo Bloque/Trimestre' : 'Editar Bloque/Trimestre', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text(_editingId == null ? 'Nuevo Bloque/Trimestre' : 'Editar Bloque/Trimestre', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
                     if (_editingId != null)
                       TextButton.icon(
                         icon: const Icon(Icons.close, size: 18),
@@ -815,7 +853,7 @@ class _AdminLessonsViewState extends ConsumerState<AdminLessonsView> {
             ),
           ),
           const SizedBox(height: 32),
-          const Text('Bloques Existentes (Por Materia)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text('Bloques Existentes (Por Materia)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
           const SizedBox(height: 16),
           if (_selectedSubjectId == null)
             const Text('Selecciona un grado y una materia arriba para ver sus bloques.', style: TextStyle(color: Colors.grey))
@@ -1143,6 +1181,7 @@ void _editQuestion(dynamic q) {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final gradesAsync = ref.watch(gradesProvider);
     
     return Padding(
@@ -1153,7 +1192,7 @@ void _editQuestion(dynamic q) {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(_editingId == null ? 'Crear Nuevo Ejercicio' : 'Editar Ejercicio', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              Text(_editingId == null ? 'Crear Nuevo Ejercicio' : 'Editar Ejercicio', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
               if (_editingId != null)
                 TextButton.icon(
                   icon: const Icon(Icons.close),
@@ -1226,7 +1265,7 @@ void _editQuestion(dynamic q) {
                 const SizedBox(height: 32),
                 
                 if (_selectedLessonId != null) ...[
-                  const Text('¿Qué tipo de ejercicio deseas agregar a esta lección?', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text('¿Qué tipo de ejercicio deseas agregar a esta lección?', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
                   const SizedBox(height: 16),
                   Wrap(
                     spacing: 16,
@@ -1242,18 +1281,18 @@ void _editQuestion(dynamic q) {
                           child: Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: isDark ? const Color(0xFF1E293B) : Colors.white,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: Colors.indigo.shade100, width: 2),
-                              boxShadow: [BoxShadow(color: Colors.indigo.withOpacity(0.05), blurRadius: 10)],
+                              border: Border.all(color: isDark ? const Color(0xFF4338CA) : Colors.indigo.shade100, width: 2),
+                              boxShadow: [BoxShadow(color: Colors.indigo.withOpacity(isDark ? 0.2 : 0.05), blurRadius: 10)],
                             ),
-                            child: const Column(
+                            child: Column(
                               children: [
-                                Icon(Icons.text_fields, size: 40, color: Colors.indigo),
-                                SizedBox(height: 10),
-                                Text('Pregunta Clásica', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                                SizedBox(height: 4),
-                                Text('Opción múltiple (A, B, C, D)', style: TextStyle(color: Colors.grey, fontSize: 11), textAlign: TextAlign.center),
+                                const Icon(Icons.text_fields, size: 40, color: Colors.indigo),
+                                const SizedBox(height: 10),
+                                Text('Pregunta Clásica', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
+                                const SizedBox(height: 4),
+                                Text('Opción múltiple (A, B, C, D)', style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : Colors.grey, fontSize: 11), textAlign: TextAlign.center),
                               ],
                             ),
                           ),
@@ -1269,18 +1308,18 @@ void _editQuestion(dynamic q) {
                           child: Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: isDark ? const Color(0xFF1E293B) : Colors.white,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: Colors.green.shade100, width: 2),
-                              boxShadow: [BoxShadow(color: Colors.green.withOpacity(0.05), blurRadius: 10)],
+                              border: Border.all(color: isDark ? const Color(0xFF15803D) : Colors.green.shade100, width: 2),
+                              boxShadow: [BoxShadow(color: Colors.green.withOpacity(isDark ? 0.2 : 0.05), blurRadius: 10)],
                             ),
-                            child: const Column(
+                            child: Column(
                               children: [
-                                Icon(Icons.videogame_asset, size: 40, color: Colors.green),
-                                SizedBox(height: 10),
-                                Text('Rana Saltarina', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                                SizedBox(height: 4),
-                                Text('Series y conteo animado', style: TextStyle(color: Colors.grey, fontSize: 11), textAlign: TextAlign.center),
+                                const Icon(Icons.videogame_asset, size: 40, color: Colors.green),
+                                const SizedBox(height: 10),
+                                Text('Rana Saltarina', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
+                                const SizedBox(height: 4),
+                                Text('Series y conteo animado', style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : Colors.grey, fontSize: 11), textAlign: TextAlign.center),
                               ],
                             ),
                           ),
@@ -1296,18 +1335,18 @@ void _editQuestion(dynamic q) {
                           child: Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: isDark ? const Color(0xFF1E293B) : Colors.white,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: Colors.purple.shade100, width: 2),
-                              boxShadow: [BoxShadow(color: Colors.purple.withOpacity(0.05), blurRadius: 10)],
+                              border: Border.all(color: isDark ? const Color(0xFF7E22CE) : Colors.purple.shade100, width: 2),
+                              boxShadow: [BoxShadow(color: Colors.purple.withOpacity(isDark ? 0.2 : 0.05), blurRadius: 10)],
                             ),
-                            child: const Column(
+                            child: Column(
                               children: [
-                                Icon(Icons.train, size: 40, color: Colors.purple),
-                                SizedBox(height: 10),
-                                Text('Tren de Sílabas', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                                SizedBox(height: 4),
-                                Text('Armar palabras por sílabas', style: TextStyle(color: Colors.grey, fontSize: 11), textAlign: TextAlign.center),
+                                const Icon(Icons.train, size: 40, color: Colors.purple),
+                                const SizedBox(height: 10),
+                                Text('Tren de Sílabas', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
+                                const SizedBox(height: 4),
+                                Text('Armar palabras por sílabas', style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : Colors.grey, fontSize: 11), textAlign: TextAlign.center),
                               ],
                             ),
                           ),
@@ -1323,18 +1362,18 @@ void _editQuestion(dynamic q) {
                           child: Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: isDark ? const Color(0xFF1E293B) : Colors.white,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: Colors.teal.shade100, width: 2),
-                              boxShadow: [BoxShadow(color: Colors.teal.withOpacity(0.05), blurRadius: 10)],
+                              border: Border.all(color: isDark ? const Color(0xFF0F766E) : Colors.teal.shade100, width: 2),
+                              boxShadow: [BoxShadow(color: Colors.teal.withOpacity(isDark ? 0.2 : 0.05), blurRadius: 10)],
                             ),
-                            child: const Column(
+                            child: Column(
                               children: [
-                                Icon(Icons.draw, size: 40, color: Colors.teal),
-                                SizedBox(height: 10),
-                                Text('Arma la Oración', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                                SizedBox(height: 4),
-                                Text('Ordenar frases en orden', style: TextStyle(color: Colors.grey, fontSize: 11), textAlign: TextAlign.center),
+                                const Icon(Icons.draw, size: 40, color: Colors.teal),
+                                const SizedBox(height: 10),
+                                Text('Arma la Oración', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
+                                const SizedBox(height: 4),
+                                Text('Ordenar frases en orden', style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : Colors.grey, fontSize: 11), textAlign: TextAlign.center),
                               ],
                             ),
                           ),
@@ -1345,7 +1384,7 @@ void _editQuestion(dynamic q) {
                 ],
                 
                 const SizedBox(height: 48),
-                const Text('Ejercicios Existentes (de la lección seleccionada)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text('Ejercicios Existentes (de la lección seleccionada)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
                 const SizedBox(height: 16),
                 if (_selectedLessonId != null)
                   Consumer(
@@ -1618,6 +1657,7 @@ class _AdminInstitutionsViewState extends ConsumerState<AdminInstitutionsView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final instAsync = ref.watch(institutionsProvider);
 
     return SingleChildScrollView(
@@ -1625,15 +1665,20 @@ class _AdminInstitutionsViewState extends ConsumerState<AdminInstitutionsView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Gestionar Instituciones', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+          Text('Gestionar Instituciones', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
           const SizedBox(height: 32),
           Container(
             padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 15, offset: const Offset(0, 8))]),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E293B) : Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(isDark ? 0.3 : 0.05), blurRadius: 15, offset: const Offset(0, 8))],
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Nueva Institución Educativa', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text('Nueva Institución Educativa', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
                 const SizedBox(height: 16),
                 TextField(controller: _nameCtrl, decoration: const InputDecoration(labelText: 'Nombre de la Institución')),
                 const SizedBox(height: 16),
@@ -1648,7 +1693,7 @@ class _AdminInstitutionsViewState extends ConsumerState<AdminInstitutionsView> {
             ),
           ),
           const SizedBox(height: 32),
-          const Text('Instituciones Existentes', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text('Instituciones Existentes', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
           const SizedBox(height: 16),
           instAsync.when(
             data: (institutions) => ListView.builder(

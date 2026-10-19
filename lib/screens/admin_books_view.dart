@@ -353,19 +353,21 @@ class _AdminBooksViewState extends ConsumerState<AdminBooksView> {
             .toList()
           ..sort();
 
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+
         return SingleChildScrollView(
           padding: const EdgeInsets.all(32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Gestión de Biblioteca',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B)),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Sube libros en PDF o EPUB y organízalos por categorías para que los estudiantes los encuentren fácilmente.',
-                style: TextStyle(fontSize: 14, color: Color(0xFF64748B)),
+                style: TextStyle(fontSize: 14, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
               ),
               const SizedBox(height: 24),
 
@@ -373,11 +375,12 @@ class _AdminBooksViewState extends ConsumerState<AdminBooksView> {
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
                   borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
                       blurRadius: 15,
                       offset: const Offset(0, 8),
                     )
@@ -513,8 +516,8 @@ class _AdminBooksViewState extends ConsumerState<AdminBooksView> {
                                 icon: const Icon(Icons.add, size: 18),
                                 label: const Text('Nueva Categoría'),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFEEF2FF),
-                                  foregroundColor: const Color(0xFF4F46E5),
+                                  backgroundColor: isDark ? const Color(0xFF312E81) : const Color(0xFFEEF2FF),
+                                  foregroundColor: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5),
                                   elevation: 0,
                                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                                 ),
@@ -545,8 +548,8 @@ class _AdminBooksViewState extends ConsumerState<AdminBooksView> {
                             icon: const Icon(Icons.attach_file),
                             label: const Text('Seleccionar PDF o EPUB'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFF1F5F9),
-                              foregroundColor: const Color(0xFF1E293B),
+                              backgroundColor: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
+                              foregroundColor: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                             ),
                             onPressed: _pickFile,
@@ -599,8 +602,8 @@ class _AdminBooksViewState extends ConsumerState<AdminBooksView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Libros Disponibles', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
-                  Text('${books.length} libros en total', style: const TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w500)),
+                  Text('Libros Disponibles', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))),
+                  Text('${books.length} libros en total', style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B), fontWeight: FontWeight.w500)),
                 ],
               ),
               const SizedBox(height: 16),
@@ -608,14 +611,14 @@ class _AdminBooksViewState extends ConsumerState<AdminBooksView> {
                 Container(
                   padding: const EdgeInsets.all(32),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey.shade200),
+                    border: Border.all(color: isDark ? const Color(0xFF334155) : Colors.grey.shade200),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'No hay libros subidos aún. ¡Usa el formulario de arriba para subir el primero!',
-                      style: TextStyle(color: Color(0xFF64748B), fontSize: 16),
+                      style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B), fontSize: 16),
                     ),
                   ),
                 )
@@ -631,7 +634,7 @@ class _AdminBooksViewState extends ConsumerState<AdminBooksView> {
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(color: Colors.grey.shade200),
+                        side: BorderSide(color: isDark ? const Color(0xFF334155) : Colors.grey.shade200),
                       ),
                       child: ListTile(
                         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -639,11 +642,11 @@ class _AdminBooksViewState extends ConsumerState<AdminBooksView> {
                           width: 44,
                           height: 44,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEEF2FF),
+                            color: isDark ? const Color(0xFF312E81) : const Color(0xFFEEF2FF),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Center(
-                            child: Icon(Icons.menu_book, color: Color(0xFF4F46E5)),
+                          child: Center(
+                            child: Icon(Icons.menu_book, color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5)),
                           ),
                         ),
                         title: Row(
@@ -658,14 +661,14 @@ class _AdminBooksViewState extends ConsumerState<AdminBooksView> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFEEF2FF),
+                                color: isDark ? const Color(0xFF312E81) : const Color(0xFFEEF2FF),
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: const Color(0xFFC7D2FE)),
+                                border: Border.all(color: isDark ? const Color(0xFF4338CA) : const Color(0xFFC7D2FE)),
                               ),
                               child: Text(
                                 book.category,
-                                style: const TextStyle(
-                                  color: Color(0xFF4338CA),
+                                style: TextStyle(
+                                  color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4338CA),
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -679,7 +682,7 @@ class _AdminBooksViewState extends ConsumerState<AdminBooksView> {
                             'Por: ${book.author}${book.description != null && book.description!.isNotEmpty ? " • ${book.description}" : ""}',
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(color: Color(0xFF64748B)),
+                            style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
                           ),
                         ),
                         trailing: Row(

@@ -154,6 +154,8 @@ class _AdminAiViewState extends ConsumerState<AdminAiView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -171,12 +173,25 @@ class _AdminAiViewState extends ConsumerState<AdminAiView> {
                 child: const Text('✨', style: TextStyle(fontSize: 28)),
               ),
               const SizedBox(width: 16),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Asistente IA con RAG 🤖', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF1E293B))),
-                    Text('Genera quizzes automáticamente con Gemini AI, entrenado con el contenido de tus lecciones.', style: TextStyle(color: Color(0xFF64748B), fontSize: 14)),
+                    Text(
+                      'Asistente IA con RAG 🤖',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                      ),
+                    ),
+                    Text(
+                      'Genera quizzes automáticamente con Gemini AI, entrenado con el contenido de tus lecciones.',
+                      style: TextStyle(
+                        color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                        fontSize: 14,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -190,17 +205,28 @@ class _AdminAiViewState extends ConsumerState<AdminAiView> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEEF2FF),
+                        color: isDark ? const Color(0xFF312E81).withOpacity(0.4) : const Color(0xFFEEF2FF),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFF4F46E5).withOpacity(0.3)),
+                        border: Border.all(color: const Color(0xFF6366F1).withOpacity(0.4)),
                       ),
                       child: Column(
                         children: [
                           Text(
                             '${_knowledgeStats!['totalLessons']}',
-                            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF4F46E5)),
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w900,
+                              color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5),
+                            ),
                           ),
-                          const Text('Lecciones\nIndexadas', style: TextStyle(fontSize: 10, color: Color(0xFF4F46E5)), textAlign: TextAlign.center),
+                          Text(
+                            'Lecciones\nIndexadas',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ],
                       ),
                     ),
@@ -227,46 +253,70 @@ class _AdminAiViewState extends ConsumerState<AdminAiView> {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDark ? const Color(0xFF1E293B) : Colors.white,
               borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
               boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+                BoxShadow(
+                  color: isDark ? Colors.black.withOpacity(0.2) : Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
               ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Row(
+                Row(
                   children: [
-                    Text('🎯', style: TextStyle(fontSize: 20)),
-                    SizedBox(width: 8),
-                    Text('Generar Quiz con IA', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF1E293B))),
+                    const Text('🎯', style: TextStyle(fontSize: 20)),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Generar Quiz con IA',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 4),
-                const Text('Escribe el tema y la IA generará preguntas automáticamente usando el contenido de tus lecciones.', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+                Text(
+                  'Escribe el tema y la IA generará preguntas automáticamente usando el contenido de tus lecciones.',
+                  style: TextStyle(
+                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                    fontSize: 13,
+                  ),
+                ),
                 const SizedBox(height: 20),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
                       flex: 3,
-                      child: _buildField(_topicCtrl, '¿Sobre qué tema? (ej. "El ciclo del agua")', Icons.lightbulb_outline),
+                      child: _buildField(context, _topicCtrl, '¿Sobre qué tema? (ej. "El ciclo del agua")', Icons.lightbulb_outline),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: _buildField(_gradeCtrl, 'Grado (ej. "4to")', Icons.school_outlined),
+                      child: _buildField(context, _gradeCtrl, 'Grado (ej. "4to")', Icons.school_outlined),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: _buildField(_subjectCtrl, 'Materia (ej. "Ciencias")', Icons.book_outlined),
+                      child: _buildField(context, _subjectCtrl, 'Materia (ej. "Ciencias")', Icons.book_outlined),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    const Text('Cantidad de preguntas:', style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF475569))),
+                    Text(
+                      'Cantidad de preguntas:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF475569),
+                      ),
+                    ),
                     const SizedBox(width: 12),
                     ...([3, 5, 8, 10].map((n) => Padding(
                       padding: const EdgeInsets.only(right: 8),
@@ -274,7 +324,11 @@ class _AdminAiViewState extends ConsumerState<AdminAiView> {
                         label: Text('$n'),
                         selected: _count == n,
                         selectedColor: const Color(0xFF4F46E5),
-                        labelStyle: TextStyle(color: _count == n ? Colors.white : const Color(0xFF475569), fontWeight: FontWeight.bold),
+                        backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
+                        labelStyle: TextStyle(
+                          color: _count == n ? Colors.white : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569)),
+                          fontWeight: FontWeight.bold,
+                        ),
                         onSelected: (_) => setState(() => _count = n),
                       ),
                     ))),
@@ -285,8 +339,15 @@ class _AdminAiViewState extends ConsumerState<AdminAiView> {
                   Container(
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(color: Colors.red.shade50, borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.red.shade200)),
-                    child: Text(_errorMsg!, style: TextStyle(color: Colors.red.shade700)),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF450A0A) : Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: isDark ? const Color(0xFF991B1B) : Colors.red.shade200),
+                    ),
+                    child: Text(
+                      _errorMsg!,
+                      style: TextStyle(color: isDark ? const Color(0xFFFCA5A5) : Colors.red.shade700),
+                    ),
                   ),
                 SizedBox(
                   width: double.infinity,
@@ -320,7 +381,11 @@ class _AdminAiViewState extends ConsumerState<AdminAiView> {
                 Expanded(
                   child: Text(
                     '${_generatedQuestions.length} preguntas generadas ✅',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF1E293B)),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                    ),
                   ),
                 ),
                 ElevatedButton.icon(
@@ -345,10 +410,16 @@ class _AdminAiViewState extends ConsumerState<AdminAiView> {
                 margin: const EdgeInsets.only(bottom: 16),
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 2))],
+                  border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: isDark ? Colors.black.withOpacity(0.15) : Colors.black.withOpacity(0.03),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -363,7 +434,14 @@ class _AdminAiViewState extends ConsumerState<AdminAiView> {
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: Text(q['questionText'] ?? '', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF1E293B))),
+                          child: Text(
+                            q['questionText'] ?? '',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                            ),
+                          ),
                         ),
                         IconButton(
                           icon: const Icon(Icons.save_rounded, color: Color(0xFF10B981)),
@@ -379,22 +457,40 @@ class _AdminAiViewState extends ConsumerState<AdminAiView> {
                         margin: const EdgeInsets.only(bottom: 6),
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
-                          color: isCorrect ? const Color(0xFFDCFCE7) : const Color(0xFFF8FAFC),
+                          color: isCorrect
+                              ? (isDark ? const Color(0xFF064E3B) : const Color(0xFFDCFCE7))
+                              : (isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC)),
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: isCorrect ? const Color(0xFF86EFAC) : const Color(0xFFE2E8F0)),
+                          border: Border.all(
+                            color: isCorrect
+                                ? const Color(0xFF10B981)
+                                : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+                          ),
                         ),
                         child: Row(
                           children: [
                             Container(
                               width: 24, height: 24,
                               decoration: BoxDecoration(
-                                color: isCorrect ? const Color(0xFF10B981) : const Color(0xFFCBD5E1),
+                                color: isCorrect
+                                    ? const Color(0xFF10B981)
+                                    : (isDark ? const Color(0xFF475569) : const Color(0xFFCBD5E1)),
                                 shape: BoxShape.circle,
                               ),
                               child: Center(child: Text(entry.key, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 12))),
                             ),
                             const SizedBox(width: 10),
-                            Expanded(child: Text(entry.value ?? '', style: TextStyle(color: isCorrect ? const Color(0xFF166534) : const Color(0xFF475569), fontWeight: isCorrect ? FontWeight.bold : FontWeight.normal))),
+                            Expanded(
+                              child: Text(
+                                entry.value ?? '',
+                                style: TextStyle(
+                                  color: isCorrect
+                                      ? (isDark ? const Color(0xFF86EFAC) : const Color(0xFF166534))
+                                      : (isDark ? const Color(0xFFCBD5E1) : const Color(0xFF475569)),
+                                  fontWeight: isCorrect ? FontWeight.bold : FontWeight.normal,
+                                ),
+                              ),
+                            ),
                             if (isCorrect) const Icon(Icons.check_circle_rounded, color: Color(0xFF10B981), size: 18),
                           ],
                         ),
@@ -405,9 +501,9 @@ class _AdminAiViewState extends ConsumerState<AdminAiView> {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFFF7ED),
+                          color: isDark ? const Color(0xFF451A03).withOpacity(0.5) : const Color(0xFFFFF7ED),
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: const Color(0xFFFED7AA)),
+                          border: Border.all(color: isDark ? const Color(0xFF92400E) : const Color(0xFFFED7AA)),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -416,7 +512,10 @@ class _AdminAiViewState extends ConsumerState<AdminAiView> {
                             Expanded(
                               child: Text(
                                 q['explanation'],
-                                style: const TextStyle(color: Color(0xFF92400E), fontSize: 13),
+                                style: TextStyle(
+                                  color: isDark ? const Color(0xFFFCD34D) : const Color(0xFF92400E),
+                                  fontSize: 13,
+                                ),
                               ),
                             ),
                           ],
@@ -433,18 +532,20 @@ class _AdminAiViewState extends ConsumerState<AdminAiView> {
     );
   }
 
-  Widget _buildField(TextEditingController ctrl, String hint, IconData icon) {
+  Widget _buildField(BuildContext context, TextEditingController ctrl, String hint, IconData icon) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return TextField(
       controller: ctrl,
+      style: TextStyle(color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B)),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(fontSize: 13),
+        hintStyle: TextStyle(fontSize: 13, color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8)),
         prefixIcon: Icon(icon, size: 18, color: const Color(0xFF94A3B8)),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
         focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF4F46E5), width: 2)),
         filled: true,
-        fillColor: const Color(0xFFF8FAFC),
+        fillColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       ),
     );
