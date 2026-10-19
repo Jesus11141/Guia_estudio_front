@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -170,4 +171,28 @@ final scoresProvider = FutureProvider.family<List<Score>, String?>((ref, gradeId
   final response = await dio.get('/scores', queryParameters: params);
   return (response.data as List).map((json) => Score.fromJson(json)).toList();
 });
+
+class ThemeModeNotifier extends Notifier<ThemeMode> {
+  @override
+  ThemeMode build() {
+    final prefs = ref.watch(sharedPrefsProvider);
+    final isDark = prefs.getBool('is_dark_mode') ?? false;
+    return isDark ? ThemeMode.dark : ThemeMode.light;
+  }
+
+  Future<void> toggleTheme() async {
+    final prefs = ref.read(sharedPrefsProvider);
+    final nextIsDark = state != ThemeMode.dark;
+    await prefs.setBool('is_dark_mode', nextIsDark);
+    state = nextIsDark ? ThemeMode.dark : ThemeMode.light;
+  }
+
+  Future<void> setTheme(bool isDark) async {
+    final prefs = ref.read(sharedPrefsProvider);
+    await prefs.setBool('is_dark_mode', isDark);
+    state = isDark ? ThemeMode.dark : ThemeMode.light;
+  }
+}
+
+final themeModeProvider = NotifierProvider<ThemeModeNotifier, ThemeMode>(() => ThemeModeNotifier());
 

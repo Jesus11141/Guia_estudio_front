@@ -34,15 +34,20 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authProvider);
+    final themeMode = ref.watch(themeModeProvider);
     
     return MaterialApp(
       title: 'Aprende Estudia',
       debugShowCheckedModeBanner: false,
+      themeMode: themeMode,
       theme: ThemeData(
         useMaterial3: true,
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: const Color(0xFFF8FAFC),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF6366F1), // Modern Indigo
-          background: const Color(0xFFF8FAFC), // Slate 50
+          brightness: Brightness.light,
+          surface: Colors.white,
         ),
         textTheme: GoogleFonts.nunitoTextTheme(Theme.of(context).textTheme),
         appBarTheme: const AppBarTheme(
@@ -95,6 +100,68 @@ class MyApp extends ConsumerWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           elevation: 24,
           backgroundColor: Colors.white,
+        ),
+      ),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF0F172A), // Slate 900
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF6366F1),
+          brightness: Brightness.dark,
+          surface: const Color(0xFF1E293B), // Slate 800
+        ),
+        textTheme: GoogleFonts.nunitoTextTheme(ThemeData.dark().textTheme),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF0F172A),
+          foregroundColor: Color(0xFFF1F5F9),
+          elevation: 0,
+          centerTitle: false,
+        ),
+        cardTheme: CardThemeData(
+          elevation: 8,
+          shadowColor: Colors.black.withOpacity(0.4),
+          color: const Color(0xFF1E293B),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+            side: const BorderSide(color: Color(0xFF334155), width: 1),
+          ),
+          margin: const EdgeInsets.symmetric(vertical: 8),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: const Color(0xFF1E293B), // Slate 800
+          contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: Color(0xFF334155)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: Color(0xFF334155)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: Color(0xFF818CF8), width: 2),
+          ),
+          labelStyle: const TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w600),
+          floatingLabelStyle: const TextStyle(color: Color(0xFF818CF8), fontWeight: FontWeight.bold),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF6366F1),
+            foregroundColor: Colors.white,
+            elevation: 4,
+            shadowColor: const Color(0xFF6366F1).withOpacity(0.4),
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 0.5),
+          ),
+        ),
+        dialogTheme: DialogThemeData(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          elevation: 24,
+          backgroundColor: const Color(0xFF1E293B),
         ),
       ),
       home: user == null ? const LoginScreen() : const MainNavigator(),
@@ -312,6 +379,7 @@ class _MainNavigatorState extends ConsumerState<MainNavigator> {
               child: Builder(
                 builder: (context) {
                   final equippedAvatar = AvatarCatalog.find(user?.avatar);
+                  final isDark = ref.watch(themeModeProvider) == ThemeMode.dark;
                   if (collapsed) {
                     return Column(
                       mainAxisSize: MainAxisSize.min,
@@ -332,6 +400,15 @@ class _MainNavigatorState extends ConsumerState<MainNavigator> {
                           ),
                         ),
                         const SizedBox(height: 6),
+                        IconButton(
+                          icon: Icon(
+                            isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                            color: isDark ? Colors.amber[300] : Colors.white70,
+                            size: 18,
+                          ),
+                          onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
+                          tooltip: isDark ? 'Modo Claro' : 'Modo Noche (Slate Dark)',
+                        ),
                         IconButton(
                           icon: const Icon(Icons.logout, color: Colors.white54, size: 18),
                           onPressed: () => ref.read(authProvider.notifier).setUser(null),
@@ -376,6 +453,15 @@ class _MainNavigatorState extends ConsumerState<MainNavigator> {
                               Text(user?.role ?? '', style: TextStyle(color: Colors.indigo[200], fontSize: 11)),
                           ],
                         ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                          color: isDark ? Colors.amber[300] : Colors.white70,
+                          size: 18,
+                        ),
+                        onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
+                        tooltip: isDark ? 'Modo Claro' : 'Modo Noche (Slate Dark)',
                       ),
                       IconButton(
                         icon: const Icon(Icons.settings, color: Colors.white54, size: 18),
@@ -526,6 +612,20 @@ class _MainNavigatorState extends ConsumerState<MainNavigator> {
                   ],
                 ),
               ),
+            Builder(
+              builder: (ctx) {
+                final isDark = ref.watch(themeModeProvider) == ThemeMode.dark;
+                return IconButton(
+                  icon: Icon(
+                    isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                    color: isDark ? Colors.amber[300] : Colors.white,
+                    size: 22,
+                  ),
+                  onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
+                  tooltip: isDark ? 'Modo Claro' : 'Modo Noche (Slate Dark)',
+                );
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.settings_outlined, color: Colors.white70, size: 22),
               onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())),

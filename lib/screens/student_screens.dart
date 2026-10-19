@@ -14,11 +14,12 @@ class GradesScreen extends ConsumerWidget {
     final gradesAsync = ref.watch(gradesProvider);
     final user = ref.watch(authProvider);
     final avatarItem = AvatarCatalog.find(user?.avatar);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final isMobile = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F5F9), // Lighter slate background for more contrast
+      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1200), // Max width for large screens
@@ -129,7 +130,7 @@ class GradesScreen extends ConsumerWidget {
                         style: TextStyle(
                           fontSize: isMobile ? 18 : 22,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF1E293B),
+                          color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -161,17 +162,24 @@ class GradesScreen extends ConsumerWidget {
                           final grade = grades[index];
                           return Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: isDark ? const Color(0xFF1E293B) : Colors.white,
                               borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: isDark ? const Color(0xFF334155) : Colors.transparent,
+                              ),
                               boxShadow: [
-                                BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 15, offset: const Offset(0, 5))
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(isDark ? 0.25 : 0.04),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 5),
+                                )
                               ],
                             ),
                             child: Material(
                               color: Colors.transparent,
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(20),
-                                hoverColor: const Color(0xFFF8FAFC),
+                                hoverColor: isDark ? const Color(0xFF334155).withOpacity(0.3) : const Color(0xFFF8FAFC),
                                 onTap: () {
                                   Navigator.push(context, MaterialPageRoute(builder: (_) => SubjectsScreen(grade: grade)));
                                 },
@@ -196,17 +204,40 @@ class GradesScreen extends ConsumerWidget {
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Text(grade.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)), maxLines: 2, overflow: TextOverflow.ellipsis),
+                                            Text(
+                                              grade.name,
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                                color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                                              ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                             const SizedBox(height: 6),
                                             Container(
                                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                              decoration: BoxDecoration(color: const Color(0xFFEEF2FF), borderRadius: BorderRadius.circular(12)),
-                                              child: Text(grade.educationLevel, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF4F46E5))),
+                                              decoration: BoxDecoration(
+                                                color: isDark ? const Color(0xFF312E81) : const Color(0xFFEEF2FF),
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              child: Text(
+                                                grade.educationLevel,
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5),
+                                                ),
+                                              ),
                                             ),
                                           ],
                                         ),
                                       ),
-                                      const Icon(Icons.chevron_right, color: Color(0xFFCBD5E1), size: 32),
+                                      Icon(
+                                        Icons.chevron_right,
+                                        color: isDark ? const Color(0xFF64748B) : const Color(0xFFCBD5E1),
+                                        size: 32,
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -220,7 +251,7 @@ class GradesScreen extends ConsumerWidget {
                   );
                 },
                 loading: () => const SliverToBoxAdapter(child: Center(child: CircularProgressIndicator())),
-                error: (e, st) => SliverToBoxAdapter(child: Center(child: Text('Error: \$e'))),
+                error: (e, st) => SliverToBoxAdapter(child: Center(child: Text('Error: $e'))),
               ),
               const SliverToBoxAdapter(child: SizedBox(height: 60)), // Bottom padding
             ],
@@ -250,13 +281,20 @@ class SubjectsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final subjectsAsync = ref.watch(subjectsProvider(grade.id));
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: Text('Materias - ${grade.name}', style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF1E293B))),
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Color(0xFF1E293B)),
+        title: Text(
+          'Materias - ${grade.name}',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+          ),
+        ),
+        backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+        iconTheme: IconThemeData(color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B)),
         elevation: 0,
         centerTitle: true,
       ),
@@ -324,18 +362,24 @@ class SubjectsScreen extends ConsumerWidget {
                           final subject = subjects[index];
                           return Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: isDark ? const Color(0xFF1E293B) : Colors.white,
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: const Color(0xFFE2E8F0)),
+                              border: Border.all(
+                                color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                              ),
                               boxShadow: [
-                                BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4))
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(isDark ? 0.25 : 0.02),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                )
                               ],
                             ),
                             child: Material(
                               color: Colors.transparent,
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(20),
-                                hoverColor: const Color(0xFFF8FAFC),
+                                hoverColor: isDark ? const Color(0xFF334155).withOpacity(0.3) : const Color(0xFFF8FAFC),
                                 onTap: () {
                                   Navigator.push(context, MaterialPageRoute(builder: (_) => LessonsScreen(subject: subject)));
                                 },
@@ -346,16 +390,29 @@ class SubjectsScreen extends ConsumerWidget {
                                       Container(
                                         width: 56, height: 56,
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFFF0F9FF),
+                                          color: isDark ? const Color(0xFF0369A1).withOpacity(0.25) : const Color(0xFFF0F9FF),
                                           borderRadius: BorderRadius.circular(16),
                                         ),
                                         child: const Center(child: Icon(Icons.auto_stories, color: Color(0xFF0EA5E9), size: 28)),
                                       ),
                                       const SizedBox(width: 20),
                                       Expanded(
-                                        child: Text(subject.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1E293B)), maxLines: 2, overflow: TextOverflow.ellipsis),
+                                        child: Text(
+                                          subject.name,
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w800,
+                                            color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                                          ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
-                                      const Icon(Icons.chevron_right, color: Color(0xFFCBD5E1), size: 32),
+                                      Icon(
+                                        Icons.chevron_right,
+                                        color: isDark ? const Color(0xFF64748B) : const Color(0xFFCBD5E1),
+                                        size: 32,
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -387,8 +444,10 @@ class LessonsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lessonsAsync = ref.watch(lessonsProvider(subject.id));
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -422,18 +481,31 @@ class LessonsScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Explora tu curso', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF1E293B))),
+                      Text(
+                        'Explora tu curso',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                        ),
+                      ),
                       const SizedBox(height: 8),
-                      const Text('Selecciona un bloque o trimestre para comenzar a aprender.', style: TextStyle(fontSize: 16, color: Color(0xFF64748B))),
+                      Text(
+                        'Selecciona un bloque o trimestre para comenzar a aprender.',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                        ),
+                      ),
                       const SizedBox(height: 32),
                       
                       lessonsAsync.when(
                         data: (lessons) {
                           if (lessons.isEmpty) {
-                            return const Center(
+                            return Center(
                               child: Padding(
-                                padding: EdgeInsets.all(40.0),
-                                child: Text('Aún no hay bloques disponibles.', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                                padding: const EdgeInsets.all(40.0),
+                                child: Text('Aún no hay bloques disponibles.', style: TextStyle(fontSize: 18, color: isDark ? const Color(0xFF94A3B8) : Colors.grey)),
                               ),
                             );
                           }
@@ -456,17 +528,25 @@ class LessonsScreen extends ConsumerWidget {
                                   final lesson = lessons[index];
                                   return Container(
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: isDark ? const Color(0xFF1E293B) : Colors.white,
                                       borderRadius: BorderRadius.circular(24),
-                                      border: Border.all(color: const Color(0xFFE2E8F0), width: 2),
+                                      border: Border.all(
+                                        color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                                        width: 1.5,
+                                      ),
                                       boxShadow: [
-                                        BoxShadow(color: const Color(0xFF8B5CF6).withOpacity(0.05), blurRadius: 15, offset: const Offset(0, 8))
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(isDark ? 0.25 : 0.04),
+                                          blurRadius: 15,
+                                          offset: const Offset(0, 8),
+                                        )
                                       ],
                                     ),
                                     child: Material(
                                       color: Colors.transparent,
                                       child: InkWell(
                                         borderRadius: BorderRadius.circular(24),
+                                        hoverColor: isDark ? const Color(0xFF334155).withOpacity(0.3) : null,
                                         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => LessonDetailScreen(lesson: lesson))),
                                         child: Padding(
                                           padding: const EdgeInsets.all(20),
@@ -487,10 +567,25 @@ class LessonsScreen extends ConsumerWidget {
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                    Text(lesson.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF1E293B))),
+                                                    Text(
+                                                      lesson.title,
+                                                      style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight: FontWeight.w900,
+                                                        color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                                                      ),
+                                                    ),
                                                     if (lesson.content.isNotEmpty) ...[
                                                       const SizedBox(height: 6),
-                                                      Text(lesson.content, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14, color: Color(0xFF64748B))),
+                                                      Text(
+                                                        lesson.content,
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                                                        ),
+                                                      ),
                                                     ]
                                                   ],
                                                 ),
@@ -499,10 +594,10 @@ class LessonsScreen extends ConsumerWidget {
                                               Container(
                                                 padding: const EdgeInsets.all(8),
                                                 decoration: BoxDecoration(
-                                                  color: const Color(0xFFF1F5F9),
+                                                  color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
                                                   borderRadius: BorderRadius.circular(12)
                                                 ),
-                                                child: const Icon(Icons.arrow_forward_ios, color: Color(0xFF94A3B8), size: 16),
+                                                child: Icon(Icons.arrow_forward_ios, color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF94A3B8), size: 16),
                                               ),
                                             ],
                                           ),
@@ -537,8 +632,10 @@ class LessonDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -577,42 +674,62 @@ class LessonDetailScreen extends ConsumerWidget {
                           width: double.infinity,
                           padding: const EdgeInsets.all(32),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: isDark ? const Color(0xFF1E293B) : Colors.white,
                             borderRadius: BorderRadius.circular(24),
-                            border: Border.all(color: const Color(0xFFE2E8F0)),
+                            border: Border.all(
+                              color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                            ),
                             boxShadow: [
-                              BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4))
+                              BoxShadow(color: Colors.black.withOpacity(isDark ? 0.25 : 0.02), blurRadius: 10, offset: const Offset(0, 4))
                             ],
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Row(
+                              Row(
                                 children: [
-                                  Icon(Icons.info_outline, color: Color(0xFF4F46E5)),
-                                  SizedBox(width: 8),
-                                  Text('Material de Estudio', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                                  const Icon(Icons.info_outline, color: Color(0xFF4F46E5)),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Material de Estudio',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                                    ),
+                                  ),
                                 ],
                               ),
                               const SizedBox(height: 16),
-                              Text(lesson.content, style: const TextStyle(fontSize: 16, height: 1.8, color: Color(0xFF475569))),
+                              Text(
+                                lesson.content,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  height: 1.8,
+                                  color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF475569),
+                                ),
+                              ),
                             ],
                           ),
                         ),
                         const SizedBox(height: 40),
                       ] else ...[
                         const SizedBox(height: 20),
-                        const Center(
+                        Center(
                           child: Text(
                             '¡Estás a un paso de empezar!',
-                            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF334155)),
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF334155),
+                            ),
                           ),
                         ),
                         const SizedBox(height: 12),
-                        const Center(
+                        Center(
                           child: Text(
                             'Resuelve los ejercicios para completar este nivel.',
-                            style: TextStyle(fontSize: 16, color: Color(0xFF64748B)),
+                            style: TextStyle(fontSize: 16, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
                           ),
                         ),
                         const SizedBox(height: 40),
@@ -624,13 +741,19 @@ class LessonDetailScreen extends ConsumerWidget {
                         margin: const EdgeInsets.only(bottom: 32),
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFFEEF2FF), Color(0xFFF5F3FF)],
+                          gradient: LinearGradient(
+                            colors: isDark
+                                ? [const Color(0xFF1E1B4B), const Color(0xFF312E81)]
+                                : [const Color(0xFFEEF2FF), const Color(0xFFF5F3FF)],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: const Color(0xFF6366F1).withOpacity(0.25)),
+                          border: Border.all(
+                            color: isDark
+                                ? const Color(0xFF6366F1).withOpacity(0.5)
+                                : const Color(0xFF6366F1).withOpacity(0.25),
+                          ),
                           boxShadow: [
                             BoxShadow(color: const Color(0xFF6366F1).withOpacity(0.06), blurRadius: 16, offset: const Offset(0, 4)),
                           ],
@@ -650,14 +773,22 @@ class LessonDetailScreen extends ConsumerWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
+                                  Text(
                                     '¿Tienes dudas con este tema? ✨',
-                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDark ? Colors.white : const Color(0xFF1E293B),
+                                    ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     'El Profe IA leyó esta lección y puede explicarte conceptos, darte ejemplos o responder tus preguntas.',
-                                    style: TextStyle(fontSize: 13, color: Colors.grey.shade700, height: 1.4),
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: isDark ? const Color(0xFFC7D2FE) : Colors.grey.shade700,
+                                      height: 1.4,
+                                    ),
                                   ),
                                 ],
                               ),

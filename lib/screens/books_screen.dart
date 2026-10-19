@@ -25,9 +25,10 @@ class _BooksScreenState extends ConsumerState<BooksScreen> {
   @override
   Widget build(BuildContext context) {
     final booksAsync = ref.watch(booksProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1000),
@@ -129,12 +130,14 @@ class _BooksScreenState extends ConsumerState<BooksScreen> {
                           // Search Box
                           TextField(
                             controller: _searchController,
+                            style: TextStyle(color: isDark ? Colors.white : const Color(0xFF1E293B)),
                             decoration: InputDecoration(
                               hintText: 'Buscar libro por título, autor o tema...',
-                              prefixIcon: const Icon(Icons.search, color: Color(0xFF64748B)),
+                              hintStyle: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                              prefixIcon: Icon(Icons.search, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
                               suffixIcon: _searchQuery.isNotEmpty
                                   ? IconButton(
-                                      icon: const Icon(Icons.clear, color: Color(0xFF64748B)),
+                                      icon: Icon(Icons.clear, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
                                       onPressed: () {
                                         _searchController.clear();
                                         setState(() => _searchQuery = '');
@@ -142,15 +145,15 @@ class _BooksScreenState extends ConsumerState<BooksScreen> {
                                     )
                                   : null,
                               filled: true,
-                              fillColor: Colors.white,
+                              fillColor: isDark ? const Color(0xFF1E293B) : Colors.white,
                               contentPadding: const EdgeInsets.symmetric(vertical: 14),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(color: Colors.grey.shade300),
+                                borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : Colors.grey.shade300),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(color: Colors.grey.shade200),
+                                borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : Colors.grey.shade200),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
@@ -178,16 +181,18 @@ class _BooksScreenState extends ConsumerState<BooksScreen> {
                                       label: Text('$cat ($count)'),
                                       selected: isSelected,
                                       selectedColor: const Color(0xFF4F46E5),
-                                      backgroundColor: Colors.white,
+                                      backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
                                       labelStyle: TextStyle(
-                                        color: isSelected ? Colors.white : const Color(0xFF475569),
+                                        color: isSelected ? Colors.white : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569)),
                                         fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                                         fontSize: 13,
                                       ),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(20),
                                         side: BorderSide(
-                                          color: isSelected ? const Color(0xFF4F46E5) : const Color(0xFFE2E8F0),
+                                          color: isSelected
+                                              ? const Color(0xFF4F46E5)
+                                              : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                                         ),
                                       ),
                                       onSelected: (selected) {
@@ -209,19 +214,19 @@ class _BooksScreenState extends ConsumerState<BooksScreen> {
                   // Books Grid or Empty State
                   if (filteredBooks.isEmpty)
                     SliverToBoxAdapter(
-                      child: Center(
+                       child: Center(
                         child: Padding(
                           padding: const EdgeInsets.all(48.0),
                           child: Column(
                             children: [
-                              Icon(Icons.menu_book, size: 64, color: Colors.grey.shade400),
+                              Icon(Icons.menu_book, size: 64, color: isDark ? const Color(0xFF475569) : Colors.grey.shade400),
                               const SizedBox(height: 16),
                               Text(
                                 books.isEmpty
                                     ? 'Aún no hay libros en la biblioteca.'
                                     : 'No se encontraron libros en "$_selectedCategory"${_searchQuery.isNotEmpty ? " con la búsqueda actual" : ""}.',
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(fontSize: 16, color: Color(0xFF64748B)),
+                                style: TextStyle(fontSize: 16, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
                               ),
                             ],
                           ),
@@ -654,7 +659,7 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
     );
   }
 
-  Widget _buildProgressBar(int progress) {
+  Widget _buildProgressBar(int progress, bool isDark) {
     final pct = (progress / 100.0).clamp(0.0, 1.0);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -664,7 +669,11 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
           children: [
             Text(
               progress > 0 ? 'Progreso' : 'Estado',
-              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF64748B)),
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+              ),
             ),
             Text(
               progress == 100 ? '¡Completado! 🎉' : (progress > 0 ? '$progress%' : 'Por comenzar'),
@@ -673,7 +682,7 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
                 fontWeight: FontWeight.bold,
                 color: progress == 100
                     ? const Color(0xFF10B981)
-                    : (progress > 0 ? const Color(0xFF4F46E5) : const Color(0xFF94A3B8)),
+                    : (progress > 0 ? const Color(0xFF818CF8) : (isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8))),
               ),
             ),
           ],
@@ -683,7 +692,7 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
           borderRadius: BorderRadius.circular(4),
           child: Container(
             height: 6,
-            color: const Color(0xFFE2E8F0),
+            color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
             child: FractionallySizedBox(
               alignment: Alignment.centerLeft,
               widthFactor: pct,
@@ -708,6 +717,7 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
     final prefs = ref.watch(sharedPrefsProvider);
     final progress = prefs.getInt('book_progress_${widget.book.id}') ?? 0;
     final palette = BookPalette.getForCategory(widget.book.category);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
@@ -715,15 +725,17 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? const Color(0xFF1E293B) : Colors.white,
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
-            color: _isHovered ? const Color(0xFFC7D2FE) : const Color(0xFFE2E8F0),
+            color: _isHovered
+                ? const Color(0xFF818CF8)
+                : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
             width: _isHovered ? 1.5 : 1.0,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF4F46E5).withOpacity(_isHovered ? 0.12 : 0.04),
+              color: (isDark ? Colors.black : const Color(0xFF4F46E5)).withOpacity(_isHovered ? 0.25 : (isDark ? 0.15 : 0.04)),
               blurRadius: _isHovered ? 20 : 10,
               offset: Offset(0, _isHovered ? 8 : 4),
             )
@@ -736,7 +748,7 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
             Container(
               height: 220,
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
+                color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(21),
                   topRight: Radius.circular(21),
@@ -744,10 +756,9 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    const Color(0xFFF1F5F9),
-                    Colors.white.withOpacity(0.5),
-                  ],
+                  colors: isDark
+                      ? [const Color(0xFF0F172A), const Color(0xFF1E293B).withOpacity(0.6)]
+                      : [const Color(0xFFF1F5F9), Colors.white.withOpacity(0.5)],
                 ),
               ),
               child: Stack(
@@ -803,14 +814,15 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEEF2FF),
+                            color: isDark ? const Color(0xFF312E81) : const Color(0xFFEEF2FF),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: const Color(0xFFC7D2FE)),
+                            border: Border.all(
+                              color: isDark ? const Color(0xFF4338CA) : const Color(0xFFC7D2FE)),
                           ),
                           child: Text(
                             widget.book.category,
-                            style: const TextStyle(
-                              color: Color(0xFF4338CA),
+                            style: TextStyle(
+                              color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4338CA),
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
                             ),
@@ -823,10 +835,10 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
                         // Título del libro
                         Text(
                           widget.book.title,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF1E293B),
+                            color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                             height: 1.2,
                           ),
                           maxLines: 2,
@@ -837,10 +849,10 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
                         // Autor
                         Text(
                           'Por: ${widget.book.author}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: Color(0xFF64748B),
+                            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -851,7 +863,7 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
                     // Barra de progreso y botón de acción
                     Column(
                       children: [
-                        _buildProgressBar(progress),
+                        _buildProgressBar(progress, isDark),
                         const SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,
