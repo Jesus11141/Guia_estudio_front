@@ -398,9 +398,10 @@ class GamesHubScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authProvider);
     final isMobile = MediaQuery.of(context).size.width < 600;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1100),
@@ -473,15 +474,25 @@ class GamesHubScreen extends ConsumerWidget {
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: isMobile ? 12 : 20, vertical: isMobile ? 10 : 16),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: isDark ? const Color(0xFF1E293B) : Colors.white,
                           borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: isDark ? const Color(0xFF334155) : Colors.transparent,
+                          ),
                           boxShadow: [
-                            BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 4))
+                            BoxShadow(color: Colors.black.withOpacity(isDark ? 0.35 : 0.1), blurRadius: 10, offset: const Offset(0, 4))
                           ],
                         ),
                         child: Column(
                           children: [
-                            const Text('Tus Estrellas', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+                            Text(
+                              'Tus Estrellas',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                              ),
+                            ),
                             const SizedBox(height: 4),
                             Row(
                               mainAxisSize: MainAxisSize.min,
@@ -494,7 +505,14 @@ class GamesHubScreen extends ConsumerWidget {
                               ],
                             ),
                             const SizedBox(height: 6),
-                            const Text('Ir a Tiendita ➔', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF4F46E5))),
+                            Text(
+                              'Ir a Tiendita ➔',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -505,38 +523,48 @@ class GamesHubScreen extends ConsumerWidget {
 
               const SizedBox(height: 40),
 
-                            if (user?.role == 'ADMIN' || user?.role == 'SUPER_ADMIN') ...[
+              if (user?.role == 'ADMIN' || user?.role == 'SUPER_ADMIN') ...[
                 const SizedBox(height: 16),
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEFF6FF),
+                    color: isDark ? const Color(0xFF1E293B) : const Color(0xFFEFF6FF),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFF93C5FD)),
+                    border: Border.all(
+                      color: isDark ? const Color(0xFF3B82F6).withOpacity(0.4) : const Color(0xFF93C5FD),
+                    ),
                   ),
                   child: Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFDBEAFE),
+                          color: isDark ? const Color(0xFF1E3A8A) : const Color(0xFFDBEAFE),
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        child: const Icon(Icons.add_photo_alternate, color: Color(0xFF2563EB), size: 28),
+                        child: Icon(Icons.add_photo_alternate, color: isDark ? const Color(0xFF60A5FA) : const Color(0xFF2563EB), size: 28),
                       ),
                       const SizedBox(width: 16),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               '💡 ¿Quieres agregar más palabras o tus propias imágenes a estos juegos?',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1E3A8A)),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: isDark ? const Color(0xFF93C5FD) : const Color(0xFF1E3A8A),
+                              ),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
                               'Ve al menú lateral a "Juegos Educativos" para crear nuevos Trenes de Sílabas, Memorama, Sílabas Perdidas o Retos con tus fotos desde tu PC. ¡Aparecerán automáticamente aquí para tus alumnos!',
-                              style: TextStyle(fontSize: 13, color: Color(0xFF1E40AF), height: 1.3),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF1E40AF),
+                                height: 1.3,
+                              ),
                             ),
                           ],
                         ),
@@ -553,15 +581,31 @@ class GamesHubScreen extends ConsumerWidget {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(color: Colors.purple.shade50, borderRadius: BorderRadius.circular(12)),
-                    child: const Icon(Icons.auto_stories, color: Colors.purple, size: 28),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF581C87) : Colors.purple.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(Icons.auto_stories, color: isDark ? const Color(0xFFD8B4FE) : Colors.purple, size: 28),
                   ),
                   const SizedBox(width: 12),
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Aprende a Leer', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF1E293B))),
-                      Text('Juegos de palabras, sílabas y comprensión lectora', style: TextStyle(fontSize: 14, color: Color(0xFF64748B))),
+                      Text(
+                        'Aprende a Leer',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                        ),
+                      ),
+                      Text(
+                        'Juegos de palabras, sílabas y comprensión lectora',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -577,6 +621,7 @@ class GamesHubScreen extends ConsumerWidget {
                       // Card: Memorama de Palabras
                       _buildGameCard(
                         context: context,
+                        isDark: isDark,
                         width: constraints.maxWidth > 700 ? (constraints.maxWidth - 40) / 2 : constraints.maxWidth,
                         title: 'Memorama de Palabras',
                         tag: 'ASOCIACIÓN Y MEMORIA',
@@ -597,6 +642,7 @@ class GamesHubScreen extends ConsumerWidget {
                       // Card: La Sílaba Perdida
                       _buildGameCard(
                         context: context,
+                        isDark: isDark,
                         width: constraints.maxWidth > 700 ? (constraints.maxWidth - 40) / 2 : constraints.maxWidth,
                         title: 'La Sílaba Perdida',
                         tag: 'COMPLETAR PALABRAS',
@@ -611,6 +657,7 @@ class GamesHubScreen extends ConsumerWidget {
                       // Card: Tren de Sílabas
                       _buildGameCard(
                         context: context,
+                        isDark: isDark,
                         width: constraints.maxWidth > 700 ? (constraints.maxWidth - 40) / 2 : constraints.maxWidth,
                         title: 'El Tren de Sílabas',
                         tag: 'PALABRAS Y SÍLABAS',
@@ -626,6 +673,7 @@ class GamesHubScreen extends ConsumerWidget {
                       // Card: Arma la Oración
                       _buildGameCard(
                         context: context,
+                        isDark: isDark,
                         width: constraints.maxWidth > 700 ? (constraints.maxWidth - 40) / 2 : constraints.maxWidth,
                         title: 'Arma la Oración',
                         tag: 'LECTURA FLUIDA',
@@ -640,6 +688,7 @@ class GamesHubScreen extends ConsumerWidget {
 
                       // Card: El Abecedario Mágico (Coming soon)
                       _buildComingSoonCard(
+                        isDark: isDark,
                         width: constraints.maxWidth > 700 ? (constraints.maxWidth - 40) / 2 : constraints.maxWidth,
                         title: 'El Abecedario Mágico',
                         tag: 'FONÉTICA',
@@ -661,15 +710,31 @@ class GamesHubScreen extends ConsumerWidget {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(color: Colors.green.shade50, borderRadius: BorderRadius.circular(12)),
-                    child: const Icon(Icons.calculate, color: Colors.green, size: 28),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF064E3B) : Colors.green.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(Icons.calculate, color: isDark ? const Color(0xFF6EE7B7) : Colors.green, size: 28),
                   ),
                   const SizedBox(width: 12),
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Aprende los Números', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF1E293B))),
-                      Text('Juegos de conteo, secuencias y lógica matemática', style: TextStyle(fontSize: 14, color: Color(0xFF64748B))),
+                      Text(
+                        'Aprende los Números',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                        ),
+                      ),
+                      Text(
+                        'Juegos de conteo, secuencias y lógica matemática',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -685,6 +750,7 @@ class GamesHubScreen extends ConsumerWidget {
                       // Card: Rana Saltarina
                       _buildGameCard(
                         context: context,
+                        isDark: isDark,
                         width: constraints.maxWidth > 700 ? (constraints.maxWidth - 40) / 2 : constraints.maxWidth,
                         title: 'La Rana Saltarina',
                         tag: 'SECUENCIAS Y PATRONES',
@@ -699,6 +765,7 @@ class GamesHubScreen extends ConsumerWidget {
 
                       // Card: Cuenta y Suma (Coming soon)
                       _buildComingSoonCard(
+                        isDark: isDark,
                         width: constraints.maxWidth > 700 ? (constraints.maxWidth - 40) / 2 : constraints.maxWidth,
                         title: 'Cuenta y Suma',
                         tag: 'CONTEO VISUAL',
@@ -721,6 +788,7 @@ class GamesHubScreen extends ConsumerWidget {
 
   Widget _buildGameCard({
     required BuildContext context,
+    required bool isDark,
     required double width,
     required String title,
     required String tag,
@@ -735,16 +803,18 @@ class GamesHubScreen extends ConsumerWidget {
     return Container(
       width: width,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF1E293B) : Colors.white,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: gradientColors.first.withOpacity(0.12),
+            color: isDark ? Colors.black.withOpacity(0.35) : gradientColors.first.withOpacity(0.12),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
         ],
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(
+          color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -757,12 +827,17 @@ class GamesHubScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: badgeColor,
+                    color: isDark ? gradientColors.first.withOpacity(0.25) : badgeColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     tag,
-                    style: TextStyle(color: badgeTextColor, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 0.8),
+                    style: TextStyle(
+                      color: isDark ? gradientColors.last : badgeTextColor,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.8,
+                    ),
                   ),
                 ),
                 Container(
@@ -778,12 +853,20 @@ class GamesHubScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             Text(
               title,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               description,
-              style: const TextStyle(fontSize: 14, color: Color(0xFF64748B), height: 1.4),
+              style: TextStyle(
+                fontSize: 14,
+                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                height: 1.4,
+              ),
             ),
             const SizedBox(height: 20),
             SizedBox(
@@ -807,6 +890,7 @@ class GamesHubScreen extends ConsumerWidget {
   }
 
   Widget _buildComingSoonCard({
+    required bool isDark,
     required double width,
     required String title,
     required String tag,
@@ -817,9 +901,12 @@ class GamesHubScreen extends ConsumerWidget {
     return Container(
       width: width,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.7),
+        color: isDark ? const Color(0xFF1E293B).withOpacity(0.6) : Colors.white.withOpacity(0.7),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE2E8F0), style: BorderStyle.solid),
+        border: Border.all(
+          color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+          style: BorderStyle.solid,
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -832,17 +919,21 @@ class GamesHubScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
+                    color: isDark ? const Color(0xFF334155) : Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.lock_clock, size: 14, color: Color(0xFF64748B)),
+                      Icon(Icons.lock_clock, size: 14, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
                       const SizedBox(width: 6),
                       Text(
                         'MUY PRONTO',
-                        style: TextStyle(color: Colors.grey.shade700, fontSize: 11, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -850,22 +941,30 @@ class GamesHubScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
+                    color: isDark ? const Color(0xFF334155) : Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Icon(icon, color: Colors.grey.shade400, size: 28),
+                  child: Icon(icon, color: isDark ? const Color(0xFF64748B) : Colors.grey.shade400, size: 28),
                 ),
               ],
             ),
             const SizedBox(height: 16),
             Text(
               title,
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.grey.shade700),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: isDark ? const Color(0xFFCBD5E1) : Colors.grey.shade700,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               description,
-              style: TextStyle(fontSize: 14, color: Colors.grey.shade500, height: 1.4),
+              style: TextStyle(
+                fontSize: 14,
+                color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade500,
+                height: 1.4,
+              ),
             ),
             const SizedBox(height: 20),
             SizedBox(
@@ -874,9 +973,17 @@ class GamesHubScreen extends ConsumerWidget {
                 onPressed: null,
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
+                  side: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
-                child: const Text('Próximamente', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                child: Text(
+                  'Próximamente',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: isDark ? const Color(0xFF64748B) : Colors.grey.shade600,
+                  ),
+                ),
               ),
             ),
           ],

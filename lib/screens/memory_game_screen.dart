@@ -223,19 +223,26 @@ class _MemoryGameScreenState extends ConsumerState<MemoryGameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final theme = _themes[_selectedThemeIndex];
     final Color themeColor = theme['color'];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         elevation: 0,
-        title: const Text('Memorama de Palabras', style: TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF1E293B))),
+        title: Text(
+          'Memorama de Palabras',
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+          ),
+        ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh, color: Color(0xFF4F46E5)),
+            icon: const Icon(Icons.refresh, color: Color(0xFF6366F1)),
             tooltip: 'Reiniciar Juego',
             onPressed: _startNewGame,
           ),
@@ -264,10 +271,19 @@ class _MemoryGameScreenState extends ConsumerState<MemoryGameScreen> {
                             return Padding(
                               padding: const EdgeInsets.only(right: 8),
                               child: ChoiceChip(
-                                label: Text(t['title'], style: TextStyle(color: isSel ? Colors.white : const Color(0xFF334155), fontWeight: FontWeight.bold)),
+                                label: Text(
+                                  t['title'],
+                                  style: TextStyle(
+                                    color: isSel ? Colors.white : (isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155)),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                                 selected: isSel,
                                 selectedColor: t['color'],
-                                backgroundColor: Colors.white,
+                                backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                                side: BorderSide(
+                                  color: isSel ? Colors.transparent : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+                                ),
                                 onSelected: (val) {
                                   if (val) {
                                     setState(() {
@@ -287,11 +303,17 @@ class _MemoryGameScreenState extends ConsumerState<MemoryGameScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: isDark ? const Color(0xFF1E293B) : Colors.white,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                       ),
-                      child: Text('Intentos: $_moves', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+                      child: Text(
+                        'Intentos: $_moves',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF475569),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -316,7 +338,7 @@ class _MemoryGameScreenState extends ConsumerState<MemoryGameScreen> {
                         ),
                         itemBuilder: (context, index) {
                           final card = _cards[index];
-                          return _buildMemoryCard(card, themeColor);
+                          return _buildMemoryCard(card, themeColor, isDark);
                         },
                       );
                     },
@@ -367,11 +389,15 @@ class _MemoryGameScreenState extends ConsumerState<MemoryGameScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.touch_app, size: 18, color: Colors.grey.shade600),
+                      Icon(Icons.touch_app, size: 18, color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600),
                       const SizedBox(width: 8),
                       Text(
                         'Voltea 2 cartas para encontrar la pareja (Imagen y su Palabra)',
-                        style: TextStyle(fontSize: 14, color: Colors.grey.shade600, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
                   ),
@@ -380,11 +406,10 @@ class _MemoryGameScreenState extends ConsumerState<MemoryGameScreen> {
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-  Widget _buildMemoryCard(MemoryCardItem card, Color themeColor) {
+  Widget _buildMemoryCard(MemoryCardItem card, Color themeColor, bool isDark) {
     return GestureDetector(
       onTap: () => _onCardTap(card),
       child: AnimatedContainer(
@@ -392,19 +417,21 @@ class _MemoryGameScreenState extends ConsumerState<MemoryGameScreen> {
         curve: Curves.easeInOut,
         decoration: BoxDecoration(
           color: card.isMatched
-              ? const Color(0xFFECFDF5)
-              : (card.isFlipped ? Colors.white : themeColor),
+              ? (isDark ? const Color(0xFF064E3B) : const Color(0xFFECFDF5))
+              : (card.isFlipped ? (isDark ? const Color(0xFF1E293B) : Colors.white) : themeColor),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
             color: card.isMatched
                 ? const Color(0xFF10B981)
-                : (card.isFlipped ? themeColor.withOpacity(0.4) : Colors.transparent),
+                : (card.isFlipped
+                    ? (isDark ? const Color(0xFF334155) : themeColor.withOpacity(0.4))
+                    : Colors.transparent),
             width: 3,
           ),
           boxShadow: [
             BoxShadow(
               color: card.isFlipped
-                  ? Colors.black.withOpacity(0.06)
+                  ? (isDark ? Colors.black26 : Colors.black.withOpacity(0.06))
                   : themeColor.withOpacity(0.25),
               blurRadius: 10,
               offset: const Offset(0, 4),
@@ -433,7 +460,11 @@ class _MemoryGameScreenState extends ConsumerState<MemoryGameScreen> {
                       const SizedBox(height: 4),
                       Text(
                         card.word,
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF64748B)),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                        ),
                       ),
                     ] else ...[
                       const Icon(Icons.menu_book, color: Color(0xFF6366F1), size: 28),
@@ -445,7 +476,9 @@ class _MemoryGameScreenState extends ConsumerState<MemoryGameScreen> {
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w900,
-                            color: card.isMatched ? const Color(0xFF059669) : const Color(0xFF1E293B),
+                            color: card.isMatched
+                                ? (isDark ? const Color(0xFF34D399) : const Color(0xFF059669))
+                                : (isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B)),
                           ),
                           textAlign: TextAlign.center,
                         ),
