@@ -12,22 +12,31 @@ class TtsHelper {
   static Future<void> init() async {
     if (_isInit) return;
     try {
-      // Find a suitable Spanish voice
-      List<dynamic> languages = await _flutterTts.getLanguages;
       String langToSet = "es-ES";
-      for (var l in languages) {
-        String langStr = l.toString().toLowerCase();
-        if (langStr == "es-mx" || langStr == "es_mx") {
-          langToSet = l.toString();
-          break;
-        } else if (langStr.startsWith("es")) {
-          langToSet = l.toString();
+      try {
+        final langs = await _flutterTts.getLanguages;
+        if (langs != null && langs is Iterable) {
+          for (var l in langs) {
+            String langStr = l.toString().toLowerCase();
+            if (langStr == "es-mx" || langStr == "es_mx") {
+              langToSet = l.toString();
+              break;
+            } else if (langStr.startsWith("es")) {
+              langToSet = l.toString();
+            }
+          }
         }
+      } catch (e) {
+        debugPrint("Error fetching TTS languages (using default es-ES): $e");
       }
+
       await _flutterTts.setLanguage(langToSet);
-      await _flutterTts.setSpeechRate(0.5); // Default speed for natural fluency
+      await _flutterTts.setSpeechRate(0.5); // Velocidad natural y clara
       await _flutterTts.setVolume(1.0);
       await _flutterTts.setPitch(1.0);
+      try {
+        await _flutterTts.awaitSpeakCompletion(false);
+      } catch (_) {}
 
       _flutterTts.setStartHandler(() {
         isSpeakingNotifier.value = true;
@@ -38,7 +47,8 @@ class TtsHelper {
         currentSpeakingTextNotifier.value = null;
       });
 
-      _flutterTts.setErrorHandler((_) {
+      _flutterTts.setErrorHandler((dynamic msg) {
+        debugPrint("TTS Error handler: $msg");
         isSpeakingNotifier.value = false;
         currentSpeakingTextNotifier.value = null;
       });
@@ -54,27 +64,43 @@ class TtsHelper {
     }
   }
 
+  /// Limpia emojis, markdown y símbolos que bloquean la síntesis de voz en navegadores
   static String _cleanTextForTts(String text) {
-    String t = text.trim().toLowerCase();
-    if (t.toLowerCase().startsWith('rr')) {
-      t = t.substring(1); 
-    }
-    return t;
+    String t = text.replaceAll(
+      RegExp(
+        r'[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}]',
+        unicode: true,
+      ),
+      '',
+    );
+    t = t.replaceAll(RegExp(r'\*\*|__'), '');
+    t = t.replaceAll(RegExp(r'#+\s*'), '');
+    t = t.replaceAll(RegExp(r'^\s*[-*•]\s*', multiLine: true), '');
+    t = t.replaceAll(RegExp(r'[<>]'), '');
+    return t.trim();
   }
 
   static Future<void> speak(String text) async {
     try {
       await init();
-      // On web, calling stop() right before speak() can cause SpeechSynthesisErrorEvent
-      if (!kIsWeb) {
+
+      // Resetear estado previo con pausa en Web para cancelar de forma limpia
+      try {
         await _flutterTts.stop();
-      }
+        if (kIsWeb) {
+          await Future.delayed(const Duration(milliseconds: 70));
+        }
+      } catch (_) {}
+
+      final cleanText = _cleanTextForTts(text);
+      if (cleanText.isEmpty) return;
+
       isSpeakingNotifier.value = true;
       currentSpeakingTextNotifier.value = text;
 
-      // Fallback timer in case platform synthesiser completion does not fire
-      final wordCount = text.split(RegExp(r'\s+')).length;
-      final estimatedDurationMs = (wordCount * 380).clamp(1600, 40000);
+      // Timer de seguridad por si el evento de finalización del navegador tarda
+      final wordCount = cleanText.split(RegExp(r'\s+')).length;
+      final estimatedDurationMs = (wordCount * 360).clamp(2000, 35000);
       Future.delayed(Duration(milliseconds: estimatedDurationMs), () {
         if (currentSpeakingTextNotifier.value == text) {
           isSpeakingNotifier.value = false;
@@ -82,18 +108,19 @@ class TtsHelper {
         }
       });
 
-      await _flutterTts.speak(_cleanTextForTts(text));
+      await _flutterTts.speak(cleanText);
     } catch (e) {
       isSpeakingNotifier.value = false;
       currentSpeakingTextNotifier.value = null;
       debugPrint("Speak error: $e");
     }
   }
-  
+
   static Future<void> stop() async {
     isSpeakingNotifier.value = false;
     currentSpeakingTextNotifier.value = null;
-    await _flutterTts.stop();
+    try {
+      await _flutterTts.stop();
+    } catch (_) {}
   }
 }
-

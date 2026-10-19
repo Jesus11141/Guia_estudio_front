@@ -285,8 +285,11 @@ class _AiTutorSheetState extends ConsumerState<AiTutorSheet> {
                         controller: _inputCtrl,
                         minLines: 1,
                         maxLines: 3,
+                        cursorColor: const Color(0xFF6366F1),
                         style: TextStyle(
                           color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
                         ),
                         decoration: InputDecoration(
                           hintText: 'Pregúntale al Profe IA...',
@@ -294,13 +297,26 @@ class _AiTutorSheetState extends ConsumerState<AiTutorSheet> {
                             fontSize: 14,
                             color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                           filled: true,
                           fillColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
                             borderSide: BorderSide(
-                              color: isDark ? const Color(0xFF334155) : Colors.transparent,
+                              color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24),
+                            borderSide: BorderSide(
+                              color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF6366F1),
+                              width: 2,
                             ),
                           ),
                         ),
