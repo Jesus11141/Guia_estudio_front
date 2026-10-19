@@ -406,8 +406,9 @@ class _MemoryGameScreenState extends ConsumerState<MemoryGameScreen> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildMemoryCard(MemoryCardItem card, Color themeColor, bool isDark) {
     return GestureDetector(
