@@ -5,6 +5,7 @@ import '../models.dart';
 import '../providers.dart';
 import '../models/avatar_catalog.dart';
 import '../widgets/ai_tutor_sheet.dart';
+import '../widgets/profe_ia_floating_button.dart';
 
 class GradesScreen extends ConsumerWidget {
   const GradesScreen({super.key});
@@ -258,16 +259,7 @@ class GradesScreen extends ConsumerWidget {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => AiTutorSheet.show(context),
-        backgroundColor: const Color(0xFF4F46E5),
-        elevation: 6,
-        icon: const Text('🤖', style: TextStyle(fontSize: 22)),
-        label: const Text(
-          'Profe IA ✨',
-          style: TextStyle(fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 0.5),
-        ),
-      ),
+      floatingActionButton: const ProfeIaFloatingButton(),
     );
   }
 
@@ -433,6 +425,7 @@ class SubjectsScreen extends ConsumerWidget {
           ),
         ),
       ),
+      floatingActionButton: ProfeIaFloatingButton(gradeName: grade.name),
     );
   }
 }
@@ -622,6 +615,7 @@ class LessonsScreen extends ConsumerWidget {
           ),
         ],
       ),
+      floatingActionButton: ProfeIaFloatingButton(subjectName: subject.name),
     );
   }
 }
@@ -841,6 +835,10 @@ class LessonDetailScreen extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+      floatingActionButton: ProfeIaFloatingButton(
+        lessonTitle: lesson.title,
+        lessonContent: lesson.content,
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers.dart';
 import '../tts_helper.dart';
 import '../models/avatar_catalog.dart';
+import 'talking_robot_avatar.dart';
 
 class AiChatMessage {
   final String text;
@@ -125,7 +126,7 @@ class _AiTutorSheetState extends ConsumerState<AiTutorSheet> {
   Widget build(BuildContext context) {
     final user = ref.watch(authProvider);
     final userAvatar = AvatarCatalog.find(user?.avatar);
-    final isDesktop = MediaQuery.of(context).size.width > 700;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Center(
       child: ConstrainedBox(
@@ -134,15 +135,15 @@ class _AiTutorSheetState extends ConsumerState<AiTutorSheet> {
           maxHeight: MediaQuery.of(context).size.height * 0.88,
         ),
         child: Container(
-          decoration: const BoxDecoration(
-            color: Color(0xFFF8FAFC),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           ),
           child: Column(
             children: [
               // ─── Header ───────────────────────────────────────────────
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [Color(0xFF4F46E5), Color(0xFF7C3AED)],
@@ -153,15 +154,19 @@ class _AiTutorSheetState extends ConsumerState<AiTutorSheet> {
                 ),
                 child: Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Text('🤖', style: TextStyle(fontSize: 26)),
+                    // Avatar parlante dinámico en cabecera
+                    ValueListenableBuilder<bool>(
+                      valueListenable: TtsHelper.isSpeakingNotifier,
+                      builder: (context, isSpeaking, _) {
+                        return TalkingRobotAvatar(
+                          size: 42,
+                          isSpeaking: isSpeaking,
+                          isThinking: _isLoading,
+                          showSoundWaves: isSpeaking || _isLoading,
+                        );
+                      },
                     ),
-                    const SizedBox(width: 14),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,7 +195,10 @@ class _AiTutorSheetState extends ConsumerState<AiTutorSheet> {
                     ),
                     IconButton(
                       icon: const Icon(Icons.close_rounded, color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () {
+                        TtsHelper.stop();
+                        Navigator.pop(context);
+                      },
                     ),
                   ],
                 ),
@@ -199,24 +207,27 @@ class _AiTutorSheetState extends ConsumerState<AiTutorSheet> {
               // ─── Quick Suggestion Chips ────────────────────────────────
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                color: Colors.white,
+                color: isDark ? const Color(0xFF1E293B) : Colors.white,
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _buildChip('💡 Dame un ejemplo', () => _sendMessage('¿Puedes darme un ejemplo fácil para entenderlo?')),
+                      _buildChip('💡 Dame un ejemplo', () => _sendMessage('¿Puedes darme un ejemplo fácil para entenderlo?'), isDark),
                       const SizedBox(width: 8),
-                      _buildChip('📝 Hazme un resumen', () => _sendMessage('¿Puedes hacerme un resumen de 3 puntos clave?')),
+                      _buildChip('📝 Hazme un resumen', () => _sendMessage('¿Puedes hacerme un resumen de 3 puntos clave?'), isDark),
                       const SizedBox(width: 8),
-                      _buildChip('❓ ¿Para qué sirve esto?', () => _sendMessage('¿Para qué sirve este tema en la vida diaria?')),
+                      _buildChip('❓ ¿Para qué sirve esto?', () => _sendMessage('¿Para qué sirve este tema en la vida diaria?'), isDark),
                       const SizedBox(width: 8),
-                      _buildChip('🎯 Ponme un mini-reto', () => _sendMessage('Hazme una pregunta sorpresa para ver si entendí')),
+                      _buildChip('🎯 Ponme un mini-reto', () => _sendMessage('Hazme una pregunta sorpresa para ver si entendí'), isDark),
                     ],
                   ),
                 ),
               ),
 
-              const Divider(height: 1, color: Color(0xFFE2E8F0)),
+              Divider(
+                height: 1,
+                color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+              ),
 
               // ─── Messages List ─────────────────────────────────────────
               Expanded(
@@ -226,14 +237,14 @@ class _AiTutorSheetState extends ConsumerState<AiTutorSheet> {
                   itemCount: _messages.length,
                   itemBuilder: (context, index) {
                     final msg = _messages[index];
-                    return _buildMessageBubble(msg, userAvatar.emoji);
+                    return _buildMessageBubble(msg, userAvatar.emoji, isDark);
                   },
                 ),
               ),
 
               if (_isLoading)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   child: Row(
                     children: [
                       const SizedBox(
@@ -243,11 +254,11 @@ class _AiTutorSheetState extends ConsumerState<AiTutorSheet> {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'El Profe IA está escribiendo...',
+                        'El Profe IA está pensando y escribiendo...',
                         style: TextStyle(
                           fontSize: 13,
                           fontStyle: FontStyle.italic,
-                          color: Colors.grey.shade600,
+                          color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
                         ),
                       ),
                     ],
@@ -258,10 +269,10 @@ class _AiTutorSheetState extends ConsumerState<AiTutorSheet> {
               Container(
                 padding: EdgeInsets.fromLTRB(16, 12, 16, MediaQuery.of(context).viewInsets.bottom + 16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, -2),
                     ),
@@ -274,15 +285,23 @@ class _AiTutorSheetState extends ConsumerState<AiTutorSheet> {
                         controller: _inputCtrl,
                         minLines: 1,
                         maxLines: 3,
+                        style: TextStyle(
+                          color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
+                        ),
                         decoration: InputDecoration(
                           hintText: 'Pregúntale al Profe IA...',
-                          hintStyle: const TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
+                          hintStyle: TextStyle(
+                            fontSize: 14,
+                            color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+                          ),
                           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                           filled: true,
-                          fillColor: const Color(0xFFF1F5F9),
+                          fillColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide.none,
+                            borderSide: BorderSide(
+                              color: isDark ? const Color(0xFF334155) : Colors.transparent,
+                            ),
                           ),
                         ),
                         onSubmitted: (_) => _sendMessage(),
@@ -309,26 +328,32 @@ class _AiTutorSheetState extends ConsumerState<AiTutorSheet> {
     );
   }
 
-  Widget _buildChip(String label, VoidCallback onTap) {
+  Widget _buildChip(String label, VoidCallback onTap, bool isDark) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: const Color(0xFFEEF2FF),
+          color: isDark ? const Color(0xFF312E81) : const Color(0xFFEEF2FF),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFF6366F1).withOpacity(0.2)),
+          border: Border.all(
+            color: isDark ? const Color(0xFF6366F1).withOpacity(0.4) : const Color(0xFF6366F1).withOpacity(0.2),
+          ),
         ),
         child: Text(
           label,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF4F46E5)),
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildMessageBubble(AiChatMessage msg, String userEmoji) {
+  Widget _buildMessageBubble(AiChatMessage msg, String userEmoji, bool isDark) {
     if (msg.isUser) {
       return Padding(
         padding: const EdgeInsets.only(bottom: 12),
@@ -358,7 +383,7 @@ class _AiTutorSheetState extends ConsumerState<AiTutorSheet> {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: const Color(0xFFE0E7FF),
+                color: isDark ? const Color(0xFF312E81) : const Color(0xFFE0E7FF),
                 shape: BoxShape.circle,
               ),
               child: Text(userEmoji, style: const TextStyle(fontSize: 18)),
@@ -373,30 +398,37 @@ class _AiTutorSheetState extends ConsumerState<AiTutorSheet> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)]),
-                shape: BoxShape.circle,
-              ),
-              child: const Text('🤖', style: TextStyle(fontSize: 18)),
+            // Avatar animado del Profe IA
+            ValueListenableBuilder<String?>(
+              valueListenable: TtsHelper.currentSpeakingTextNotifier,
+              builder: (context, currentSpeakingText, _) {
+                final isThisSpeaking = currentSpeakingText == msg.text;
+                return TalkingRobotAvatar(
+                  size: 32,
+                  isSpeaking: isThisSpeaking,
+                  isThinking: false,
+                  showSoundWaves: isThisSpeaking,
+                );
+              },
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 8),
             Flexible(
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(4),
                     topRight: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
                     bottomRight: Radius.circular(20),
                   ),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  border: Border.all(
+                    color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
+                      color: Colors.black.withOpacity(isDark ? 0.25 : 0.03),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
                     ),
@@ -407,37 +439,68 @@ class _AiTutorSheetState extends ConsumerState<AiTutorSheet> {
                   children: [
                     Text(
                       msg.text,
-                      style: const TextStyle(color: Color(0xFF1E293B), fontSize: 15, height: 1.5),
+                      style: TextStyle(
+                        color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                        fontSize: 15,
+                        height: 1.5,
+                      ),
                     ),
                     const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        InkWell(
-                          onTap: () => TtsHelper.speak(msg.text),
-                          borderRadius: BorderRadius.circular(16),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF1F5F9),
+                        ValueListenableBuilder<String?>(
+                          valueListenable: TtsHelper.currentSpeakingTextNotifier,
+                          builder: (context, currentSpeakingText, _) {
+                            final isThisSpeaking = currentSpeakingText == msg.text;
+                            return InkWell(
+                              onTap: () {
+                                if (isThisSpeaking) {
+                                  TtsHelper.stop();
+                                } else {
+                                  TtsHelper.speak(msg.text);
+                                }
+                              },
                               borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.volume_up_rounded, size: 16, color: Color(0xFF4F46E5)),
-                                SizedBox(width: 4),
-                                Text(
-                                  'Escuchar',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF4F46E5),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: isThisSpeaking
+                                      ? (isDark ? const Color(0xFF450A0A) : const Color(0xFFFEE2E2))
+                                      : (isDark ? const Color(0xFF312E81) : const Color(0xFFF1F5F9)),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: isThisSpeaking
+                                        ? Colors.redAccent.withOpacity(0.5)
+                                        : (isDark ? const Color(0xFF6366F1).withOpacity(0.3) : Colors.transparent),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      isThisSpeaking ? Icons.stop_circle_rounded : Icons.volume_up_rounded,
+                                      size: 16,
+                                      color: isThisSpeaking
+                                          ? (isDark ? const Color(0xFFFCA5A5) : const Color(0xFFDC2626))
+                                          : (isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5)),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      isThisSpeaking ? 'Detener' : 'Escuchar',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                        color: isThisSpeaking
+                                          ? (isDark ? const Color(0xFFFCA5A5) : const Color(0xFFDC2626))
+                                          : (isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5)),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
