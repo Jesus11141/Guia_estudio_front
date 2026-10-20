@@ -291,16 +291,32 @@ class _MainNavigatorState extends ConsumerState<MainNavigator> {
                         ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: Text(
-                            user?.institution?.name ?? 'Guía de Estudio',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              height: 1.2,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                user?.institution?.name ?? 'Guía de Estudio',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  height: 1.2,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 2),
+                              const Text(
+                                'A PRODUCT OF DJH COMPANY',
+                                style: TextStyle(
+                                  color: Colors.white60,
+                                  fontSize: 8.5,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.8,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         IconButton(
@@ -481,6 +497,19 @@ class _MainNavigatorState extends ConsumerState<MainNavigator> {
                 },
               ),
             ),
+            if (!collapsed)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  'A PRODUCT OF DJH COMPANY',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.35),
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
           ],
         ),
       ),

@@ -88,7 +88,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 4),
+                        Text(
+                          'A PRODUCT OF DJH COMPANY',
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1.5,
+                            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
                         Text(
                           'Inicia sesión para continuar',
                           style: TextStyle(
@@ -134,6 +144,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         child: _isLoading 
                             ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3)) 
                             : const Text('Ingresar', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'A PRODUCT OF DJH COMPANY',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.2,
+                        color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
                       ),
                     ),
                   ],

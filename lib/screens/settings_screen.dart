@@ -230,6 +230,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                 ),
                         ),
+                        const SizedBox(height: 32),
+                        Center(
+                          child: Column(
+                            children: [
+                              Text(
+                                'A PRODUCT OF DJH COMPANY',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 1.4,
+                                  color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Aprende Estudia • v1.0.0',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: isDark ? const Color(0xFF475569) : const Color(0xFF94A3B8),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
