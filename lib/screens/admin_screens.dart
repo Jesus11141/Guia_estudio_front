@@ -310,12 +310,17 @@ class _CreateUserDialogState extends ConsumerState<CreateUserDialog> {
           'hasGames': _role == 'STUDENT' ? _hasGames : true,
         });
       } else {
-        await ref.read(dioProvider).put('/users/${widget.userToEdit!.id}', data: {
+        final updatePayload = <String, dynamic>{
           'name': _nameCtrl.text.trim(),
           if (_passCtrl.text.isNotEmpty) 'pass': _passCtrl.text,
           'gradeId': _role == 'STUDENT' ? _gradeId : null,
           if (_role == 'STUDENT') 'hasGames': _hasGames,
-        });
+        };
+        if (user?.role == 'SUPER_ADMIN') {
+          updatePayload['role'] = _role;
+          updatePayload['institutionId'] = _institutionId;
+        }
+        await ref.read(dioProvider).put('/users/${widget.userToEdit!.id}', data: updatePayload);
       }
       ref.invalidate(usersProvider);
       if(mounted) {
@@ -360,7 +365,7 @@ class _CreateUserDialogState extends ConsumerState<CreateUserDialog> {
                     DropdownMenuItem(value: 'ADMIN', child: Text('Administrador Institución')),
                     DropdownMenuItem(value: 'SUPER_ADMIN', child: Text('Súper Administrador')),
                   ],
-                  onChanged: isEditing ? null : (v) => setState(() => _role = v!),
+                  onChanged: (v) => setState(() => _role = v!),
                 )
               else
                 DropdownButtonFormField<String>(
@@ -381,7 +386,7 @@ class _CreateUserDialogState extends ConsumerState<CreateUserDialog> {
                       const DropdownMenuItem(value: null, child: Text('Ninguna')),
                       ...list.map((e) => DropdownMenuItem(value: e.id, child: Text(e.name)))
                     ],
-                    onChanged: isEditing ? null : (v) => setState(() => _institutionId = v),
+                    onChanged: (v) => setState(() => _institutionId = v),
                   ),
                   loading: () => const CircularProgressIndicator(),
                   error: (e,st) => const Text('Error instituciones'),
