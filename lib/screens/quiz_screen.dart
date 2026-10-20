@@ -29,6 +29,21 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   bool _hasAnswered = false;
   int _score = 0;
 
+  // Cache de opciones aleatorizadas por pregunta para mantener el orden durante la respuesta, pero cambiar al reintentar o reingresar
+  final Map<int, List<MapEntry<String, String>>> _shuffledOptionsByQuestion = {};
+
+  List<MapEntry<String, String>> _getShuffledOptions(int questionIndex, Question q) {
+    return _shuffledOptionsByQuestion.putIfAbsent(questionIndex, () {
+      final list = <MapEntry<String, String>>[];
+      if (q.optionA.isNotEmpty && q.optionA != '-') list.add(MapEntry('A', q.optionA));
+      if (q.optionB.isNotEmpty && q.optionB != '-') list.add(MapEntry('B', q.optionB));
+      if (q.optionC.isNotEmpty && q.optionC != '-') list.add(MapEntry('C', q.optionC));
+      if (q.optionD.isNotEmpty && q.optionD != '-') list.add(MapEntry('D', q.optionD));
+      list.shuffle();
+      return list;
+    });
+  }
+
   Future<void> _submitScore(int totalQuestions) async {
     try {
       final dio = ref.read(dioProvider);
@@ -280,16 +295,42 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                 ),
               ),
               const SizedBox(height: 48),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF4F46E5),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 20),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  elevation: 0,
-                ),
-                child: Text(widget.customTitle != null ? '¡Terminar Juego! 🌟' : 'Volver al Temario', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                alignment: WrapAlignment.center,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _currentIndex = 0;
+                        _score = 0;
+                        _selectedOption = null;
+                        _hasAnswered = false;
+                        _shuffledOptionsByQuestion.clear();
+                      });
+                    },
+                    icon: const Icon(Icons.refresh_rounded, size: 22),
+                    label: const Text('Reintentar Ejercicios', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF4F46E5),
+                      side: const BorderSide(color: Color(0xFF4F46E5), width: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4F46E5),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      elevation: 0,
+                    ),
+                    child: Text(widget.customTitle != null ? '¡Terminar Juego! 🌟' : 'Volver al Temario', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  ),
+                ],
               )
             ],
           ),
@@ -470,17 +511,21 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                                 ],
                               );
                               
+                              final shuffledOptions = _getShuffledOptions(_currentIndex, question);
+                              final displayLabels = ['A', 'B', 'C', 'D'];
+
                               Widget optionsContent = Column(
-                                children: ['A', 'B', 'C', 'D'].map((opt) {
-                                  String text = '';
-                                  if (opt == 'A') text = question.optionA;
-                                  if (opt == 'B') text = question.optionB;
-                                  if (opt == 'C') text = question.optionC;
-                                  if (opt == 'D') text = question.optionD;
+                                children: shuffledOptions.asMap().entries.map((entryItem) {
+                                  final displayIndex = entryItem.key;
+                                  final optEntry = entryItem.value;
+                                  final originalOpt = optEntry.key;
+                                  final text = optEntry.value;
+                                  final displayLetter = displayIndex < displayLabels.length ? displayLabels[displayIndex] : '${displayIndex + 1}';
+                                  
                                   if (text.isEmpty) return const SizedBox.shrink();
                                   
-                                  bool isThisSelected = _selectedOption == opt;
-                                  bool isThisCorrect = opt == question.correctOption;
+                                  bool isThisSelected = _selectedOption == originalOpt;
+                                  bool isThisCorrect = originalOpt == question.correctOption;
                                   
                                   Color bgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
                                   Color borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
@@ -505,7 +550,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                                   return GestureDetector(
                                     onTap: _hasAnswered ? null : () {
                                       setState(() {
-                                        _selectedOption = opt;
+                                        _selectedOption = originalOpt;
                                       });
                                     },
                                     child: Container(
@@ -531,7 +576,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                                               borderRadius: BorderRadius.circular(10),
                                             ),
                                             child: Center(
-                                              child: Text(opt, style: TextStyle(
+                                              child: Text(displayLetter, style: TextStyle(
                                                 fontWeight: FontWeight.w900, 
                                                 color: isThisSelected || (_hasAnswered && isThisCorrect)
                                                     ? Colors.white
