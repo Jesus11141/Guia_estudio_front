@@ -68,28 +68,40 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   }
 
   Future<void> _showAiExplanation(Question question) async {
-    final correctText = _getOptionText(question, question.correctOption);
+    String correctText = _getOptionText(question, question.correctOption);
+    if ((correctText == '-' || correctText.trim().isEmpty) && question.metadata?['targetSentence'] != null) {
+      correctText = question.metadata!['targetSentence'].toString();
+    } else if ((correctText == '-' || correctText.trim().isEmpty) && question.metadata?['targetWord'] != null) {
+      correctText = question.metadata!['targetWord'].toString();
+    }
 
     showDialog(
       context: context,
       barrierDismissible: true,
       builder: (ctx) {
+        final isDark = Theme.of(ctx).brightness == Brightness.dark;
+
         return FutureBuilder<String>(
           future: _fetchAiExplanation(question, correctText),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return AlertDialog(
+                backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 content: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      CircularProgressIndicator(color: Color(0xFF4F46E5)),
-                      SizedBox(height: 20),
+                    children: [
+                      const CircularProgressIndicator(color: Color(0xFF4F46E5)),
+                      const SizedBox(height: 20),
                       Text(
                         'Profe IA está pensando una explicación...',
-                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600, 
+                          fontSize: 15,
+                          color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -101,22 +113,27 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
             final explanationText = snapshot.data ?? question.explanation ?? 'Recuerda repasar el tema para la próxima vez.';
 
             return AlertDialog(
+              backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
               title: Row(
                 children: [
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFEF3C7),
+                      color: isDark ? const Color(0xFF78350F).withOpacity(0.5) : const Color(0xFFFEF3C7),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Text('💡', style: TextStyle(fontSize: 22)),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'Explicación del Profe IA',
-                      style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: Color(0xFF92400E)),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800, 
+                        fontSize: 18, 
+                        color: isDark ? const Color(0xFFFDE68A) : const Color(0xFF92400E),
+                      ),
                     ),
                   ),
                 ],
@@ -129,7 +146,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFECFDF5),
+                        color: isDark ? const Color(0xFF064E3B).withOpacity(0.4) : const Color(0xFFECFDF5),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: const Color(0xFF10B981).withOpacity(0.3)),
                       ),
@@ -140,7 +157,11 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                           Expanded(
                             child: Text(
                               'Respuesta correcta: $correctText',
-                              style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF065F46), fontSize: 14),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold, 
+                                color: isDark ? const Color(0xFF6EE7B7) : const Color(0xFF065F46), 
+                                fontSize: 14,
+                              ),
                             ),
                           ),
                         ],
@@ -149,7 +170,11 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                     const SizedBox(height: 16),
                     Text(
                       explanationText,
-                      style: const TextStyle(fontSize: 15, height: 1.5, color: Color(0xFF1E293B)),
+                      style: TextStyle(
+                        fontSize: 15, 
+                        height: 1.5, 
+                        color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                      ),
                     ),
                   ],
                 ),
@@ -157,8 +182,8 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
               actions: [
                 TextButton.icon(
                   onPressed: () => TtsHelper.speak(explanationText),
-                  icon: const Icon(Icons.volume_up_rounded, color: Color(0xFF4F46E5), size: 18),
-                  label: const Text('Escuchar', style: TextStyle(color: Color(0xFF4F46E5), fontWeight: FontWeight.bold)),
+                  icon: Icon(Icons.volume_up_rounded, color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5), size: 18),
+                  label: Text('Escuchar', style: TextStyle(color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5), fontWeight: FontWeight.bold)),
                 ),
                 ElevatedButton(
                   onPressed: () => Navigator.pop(ctx),
@@ -415,14 +440,18 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                                     showDialog(
                                       context: context,
                                       builder: (_) => AlertDialog(
-                                        title: const Row(
+                                        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                                        title: Row(
                                           children: [
-                                            Icon(Icons.lightbulb, color: Color(0xFFF59E0B)),
-                                            SizedBox(width: 8),
-                                            Text('Guía de Estudio', style: TextStyle(color: Color(0xFFB45309), fontWeight: FontWeight.bold)),
+                                            const Icon(Icons.lightbulb, color: Color(0xFFF59E0B)),
+                                            const SizedBox(width: 8),
+                                            Text('Guía de Estudio', style: TextStyle(color: isDark ? const Color(0xFFFBBF24) : const Color(0xFFB45309), fontWeight: FontWeight.bold)),
                                           ],
                                         ),
-                                        content: Text(question.explanation!, style: const TextStyle(fontSize: 16, height: 1.5)),
+                                        content: Text(
+                                          question.explanation!, 
+                                          style: TextStyle(fontSize: 16, height: 1.5, color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B)),
+                                        ),
                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                                         actions: [
                                           TextButton(
@@ -830,6 +859,7 @@ class _SyllableTrainWidgetState extends State<SyllableTrainWidget> {
     final String targetWord = meta['targetWord'] ?? '';
     final String? imageUrl = meta['imageUrl'];
     final bool isWon = widget.hasAnswered;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Column(
           children: [
@@ -839,7 +869,12 @@ class _SyllableTrainWidgetState extends State<SyllableTrainWidget> {
                 Expanded(
                   child: Text(
                     widget.question.questionText,
-                    style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Color(0xFF0F172A), height: 1.3),
+                    style: TextStyle(
+                      fontSize: 26, 
+                      fontWeight: FontWeight.w800, 
+                      color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A), 
+                      height: 1.3,
+                    ),
                   ),
                 ),
                 IconButton(
@@ -1097,6 +1132,7 @@ class _SentenceBuilderWidgetState extends State<SentenceBuilderWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final meta = widget.question.metadata ?? {};
     final String? imageUrl = meta['imageUrl'];
     final bool isWon = widget.hasAnswered;
@@ -1112,7 +1148,12 @@ class _SentenceBuilderWidgetState extends State<SentenceBuilderWidget> {
             Expanded(
               child: Text(
                 widget.question.questionText.isNotEmpty ? widget.question.questionText : '¡Ordena las palabras para formar la oración!',
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: Color(0xFF0F172A), height: 1.3),
+                style: TextStyle(
+                  fontSize: 24, 
+                  fontWeight: FontWeight.w800, 
+                  color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A), 
+                  height: 1.3,
+                ),
               ),
             ),
             IconButton(
@@ -1154,13 +1195,15 @@ class _SentenceBuilderWidgetState extends State<SentenceBuilderWidget> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           decoration: BoxDecoration(
             color: isWon 
-              ? (isAllCorrect ? const Color(0xFFF0FDF4) : const Color(0xFFFEF2F2))
-              : Colors.white,
+              ? (isAllCorrect 
+                  ? (isDark ? const Color(0xFF064E3B).withOpacity(0.4) : const Color(0xFFF0FDF4)) 
+                  : (isDark ? const Color(0xFF450A0A).withOpacity(0.4) : const Color(0xFFFEF2F2)))
+              : (isDark ? const Color(0xFF1E293B) : Colors.white),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: isWon 
                 ? (isAllCorrect ? const Color(0xFF22C55E) : const Color(0xFFEF4444))
-                : const Color(0xFFCCFBF1),
+                : (isDark ? const Color(0xFF334155) : const Color(0xFFCCFBF1)),
               width: 2.5,
             ),
             boxShadow: [
@@ -1182,22 +1225,22 @@ class _SentenceBuilderWidgetState extends State<SentenceBuilderWidget> {
                   final placed = placedWords[index];
                   return DragTarget<String>(
                     builder: (context, candidateData, rejectedData) {
-                      Color boxColor = Colors.teal.shade50;
-                      Color borderColor = Colors.teal.shade200;
-                      Color textColor = Colors.teal.shade900;
+                      Color boxColor = isDark ? const Color(0xFF0F172A) : Colors.teal.shade50;
+                      Color borderColor = isDark ? const Color(0xFF14B8A6) : Colors.teal.shade200;
+                      Color textColor = isDark ? const Color(0xFF5EEAD4) : Colors.teal.shade900;
 
                       if (placed == null) {
-                        boxColor = Colors.grey.shade100;
-                        borderColor = Colors.grey.shade300;
+                        boxColor = isDark ? const Color(0xFF0F172A).withOpacity(0.4) : Colors.grey.shade100;
+                        borderColor = isDark ? const Color(0xFF334155) : Colors.grey.shade300;
                       } else if (isWon) {
                         if (placed == targetWords[index]) {
-                          boxColor = const Color(0xFFDCFCE7);
+                          boxColor = isDark ? const Color(0xFF064E3B) : const Color(0xFFDCFCE7);
                           borderColor = const Color(0xFF22C55E);
-                          textColor = const Color(0xFF15803D);
+                          textColor = isDark ? const Color(0xFF6EE7B7) : const Color(0xFF15803D);
                         } else {
-                          boxColor = const Color(0xFFFEE2E2);
+                          boxColor = isDark ? const Color(0xFF450A0A) : const Color(0xFFFEE2E2);
                           borderColor = const Color(0xFFEF4444);
-                          textColor = const Color(0xFFB91C1C);
+                          textColor = isDark ? const Color(0xFFFCA5A5) : const Color(0xFFB91C1C);
                         }
                       }
 
@@ -1242,7 +1285,7 @@ class _SentenceBuilderWidgetState extends State<SentenceBuilderWidget> {
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.grey.shade400,
+                                    color: isDark ? const Color(0xFF64748B) : Colors.grey.shade400,
                                   ),
                                 ),
                           ),
@@ -1264,7 +1307,7 @@ class _SentenceBuilderWidgetState extends State<SentenceBuilderWidget> {
                 const SizedBox(height: 12),
                 Text(
                   'Toca o arrastra las palabras en orden',
-                  style: TextStyle(fontSize: 14, color: Colors.teal.shade700, fontStyle: FontStyle.italic),
+                  style: TextStyle(fontSize: 14, color: isDark ? const Color(0xFF5EEAD4) : Colors.teal.shade700, fontStyle: FontStyle.italic),
                 ),
               ],
             ],
@@ -1275,9 +1318,9 @@ class _SentenceBuilderWidgetState extends State<SentenceBuilderWidget> {
 
         // Available words bank
         if (!isWon) ...[
-          const Text(
+          Text(
             'Palabras disponibles:',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF475569)),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF475569)),
           ),
           const SizedBox(height: 14),
           Wrap(
@@ -1501,6 +1544,7 @@ class _MissingSyllableWidgetState extends State<MissingSyllableWidget> {
     final bool isWon = widget.hasAnswered;
     final String correctSyllable = (missingIndex < syllables.length) ? syllables[missingIndex] : '';
     final bool isCorrect = isWon && _selectedSyllable?.toLowerCase() == correctSyllable.toLowerCase();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -1511,7 +1555,12 @@ class _MissingSyllableWidgetState extends State<MissingSyllableWidget> {
             Expanded(
               child: Text(
                 widget.question.questionText.isNotEmpty ? widget.question.questionText : '¡Encuentra la sílaba que falta!',
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: Color(0xFF0F172A), height: 1.3),
+                style: TextStyle(
+                  fontSize: 24, 
+                  fontWeight: FontWeight.w800, 
+                  color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A), 
+                  height: 1.3,
+                ),
               ),
             ),
             IconButton(
@@ -1549,9 +1598,9 @@ class _MissingSyllableWidgetState extends State<MissingSyllableWidget> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? const Color(0xFF1E293B) : Colors.white,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: const Color(0xFFFED7AA), width: 2),
+            border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFFED7AA), width: 2),
             boxShadow: [
               BoxShadow(
                 color: Colors.orange.withOpacity(0.06),

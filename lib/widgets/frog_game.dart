@@ -82,19 +82,21 @@ class _FrogGameWidgetState extends State<FrogGameWidget> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.blue.shade50,
+        color: isDark ? const Color(0xFF1E293B) : Colors.blue.shade50,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.blue.shade200, width: 2),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : Colors.blue.shade200, width: 2),
       ),
       child: Column(
         children: [
-          const Text('¡La Rana Saltarina!', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue)),
+          Text('¡La Rana Saltarina!', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFF60A5FA) : Colors.blue)),
           const SizedBox(height: 16),
-          Text('Patrón: +$step', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green)),
+          Text('Patrón: +$step', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFF4ADE80) : Colors.green)),
           const SizedBox(height: 40),
           
           SizedBox(
@@ -173,7 +175,7 @@ class _FrogGameWidgetState extends State<FrogGameWidget> with SingleTickerProvid
             ),
           ),
           const SizedBox(height: 16),
-          const Text('Toca la rana para que salte y descubre el último número.', style: TextStyle(color: Colors.black54, fontStyle: FontStyle.italic)),
+          Text('Toca la rana para que salte y descubre el último número.', style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : Colors.black54, fontStyle: FontStyle.italic)),
         ],
       ),
     );
