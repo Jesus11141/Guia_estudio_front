@@ -274,6 +274,7 @@ class SubjectsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final subjectsAsync = ref.watch(subjectsProvider(grade.id));
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isMobile = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
@@ -282,6 +283,7 @@ class SubjectsScreen extends ConsumerWidget {
           'Materias - ${grade.name}',
           style: TextStyle(
             fontWeight: FontWeight.w800,
+            fontSize: isMobile ? 18 : 20,
             color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
           ),
         ),
@@ -297,16 +299,21 @@ class SubjectsScreen extends ConsumerWidget {
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
+                  padding: EdgeInsets.fromLTRB(
+                    isMobile ? 16 : 24,
+                    isMobile ? 16 : 32,
+                    isMobile ? 16 : 24,
+                    isMobile ? 16 : 32,
+                  ),
                   child: Container(
-                    padding: const EdgeInsets.all(32),
+                    padding: EdgeInsets.all(isMobile ? 20 : 32),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [Color(0xFF0EA5E9), Color(0xFF2563EB)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: BorderRadius.circular(isMobile ? 20 : 24),
                       boxShadow: [
                         BoxShadow(color: const Color(0xFF2563EB).withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 10))
                       ],
@@ -317,13 +324,27 @@ class SubjectsScreen extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(grade.name, style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: Colors.white)),
+                              Text(
+                                grade.name,
+                                style: TextStyle(
+                                  fontSize: isMobile ? 22 : 32,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                ),
+                              ),
                               const SizedBox(height: 8),
-                              Text('Selecciona la materia que deseas estudiar hoy.', style: TextStyle(fontSize: 18, color: Colors.blue[50], fontWeight: FontWeight.w500)),
+                              Text(
+                                'Selecciona la materia que deseas estudiar hoy.',
+                                style: TextStyle(
+                                  fontSize: isMobile ? 14 : 18,
+                                  color: Colors.blue[50],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        if (MediaQuery.of(context).size.width > 600)
+                        if (!isMobile)
                           const Icon(Icons.category, size: 80, color: Colors.white24),
                       ],
                     ),
@@ -341,13 +362,13 @@ class SubjectsScreen extends ConsumerWidget {
                     );
                   }
                   return SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 24),
                     sliver: SliverGrid(
-                      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                         maxCrossAxisExtent: 450,
-                        mainAxisExtent: 120,
-                        crossAxisSpacing: 24,
-                        mainAxisSpacing: 24,
+                        mainAxisExtent: isMobile ? 100 : 120,
+                        crossAxisSpacing: isMobile ? 14 : 24,
+                        mainAxisSpacing: isMobile ? 14 : 24,
                       ),
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
@@ -438,19 +459,33 @@ class LessonsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final lessonsAsync = ref.watch(lessonsProvider(subject.id));
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isMobile = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 200.0,
+            expandedHeight: isMobile ? 160.0 : 200.0,
             floating: false,
             pinned: true,
             iconTheme: const IconThemeData(color: Colors.white),
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
-              title: Text('Temario: ${subject.name}', style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.white, shadows: [Shadow(color: Colors.black45, blurRadius: 4)])),
+              title: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(
+                  'Temario: ${subject.name}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: isMobile ? 17 : 22,
+                    color: Colors.white,
+                    shadows: const [Shadow(color: Colors.black45, blurRadius: 4)],
+                  ),
+                ),
+              ),
               background: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
@@ -460,7 +495,7 @@ class LessonsScreen extends ConsumerWidget {
                   ),
                 ),
                 child: Center(
-                  child: Icon(Icons.school, size: 100, color: Colors.white.withOpacity(0.2)),
+                  child: Icon(Icons.school, size: isMobile ? 64 : 100, color: Colors.white.withOpacity(0.2)),
                 ),
               ),
             ),
@@ -470,27 +505,27 @@ class LessonsScreen extends ConsumerWidget {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 800),
                 child: Padding(
-                  padding: const EdgeInsets.all(32.0),
+                  padding: EdgeInsets.all(isMobile ? 16.0 : 32.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Explora tu curso',
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: isMobile ? 20 : 24,
                           fontWeight: FontWeight.w900,
                           color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 6),
                       Text(
                         'Selecciona un bloque o trimestre para comenzar a aprender.',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: isMobile ? 14 : 16,
                           color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      SizedBox(height: isMobile ? 20 : 32),
                       
                       lessonsAsync.when(
                         data: (lessons) {
@@ -627,19 +662,34 @@ class LessonDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isMobile = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 220.0,
+            expandedHeight: isMobile ? 160.0 : 220.0,
             floating: false,
             pinned: true,
             iconTheme: const IconThemeData(color: Colors.white),
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
-              title: Text(lesson.title, style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.white, shadows: [Shadow(color: Colors.black45, blurRadius: 4)])),
+              title: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(
+                  lesson.title,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: isMobile ? 17 : 22,
+                    color: Colors.white,
+                    shadows: const [Shadow(color: Colors.black45, blurRadius: 4)],
+                  ),
+                ),
+              ),
               background: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
@@ -649,7 +699,7 @@ class LessonDetailScreen extends ConsumerWidget {
                   ),
                 ),
                 child: Center(
-                  child: Icon(Icons.auto_awesome, size: 100, color: Colors.white.withOpacity(0.2)),
+                  child: Icon(Icons.auto_awesome, size: isMobile ? 64 : 100, color: Colors.white.withOpacity(0.2)),
                 ),
               ),
             ),
@@ -659,17 +709,17 @@ class LessonDetailScreen extends ConsumerWidget {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 800),
                 child: Padding(
-                  padding: const EdgeInsets.all(32.0),
+                  padding: EdgeInsets.all(isMobile ? 16.0 : 32.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (lesson.content.isNotEmpty) ...[
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(32),
+                          padding: EdgeInsets.all(isMobile ? 18.0 : 32.0),
                           decoration: BoxDecoration(
                             color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                            borderRadius: BorderRadius.circular(24),
+                            borderRadius: BorderRadius.circular(isMobile ? 18 : 24),
                             border: Border.all(
                               color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
                             ),
@@ -687,7 +737,7 @@ class LessonDetailScreen extends ConsumerWidget {
                                   Text(
                                     'Material de Estudio',
                                     style: TextStyle(
-                                      fontSize: 18,
+                                      fontSize: isMobile ? 16 : 18,
                                       fontWeight: FontWeight.bold,
                                       color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                                     ),
@@ -698,7 +748,7 @@ class LessonDetailScreen extends ConsumerWidget {
                               Text(
                                 lesson.content,
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: isMobile ? 14 : 16,
                                   height: 1.8,
                                   color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF475569),
                                 ),
@@ -706,14 +756,15 @@ class LessonDetailScreen extends ConsumerWidget {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 40),
+                        SizedBox(height: isMobile ? 24 : 40),
                       ] else ...[
                         const SizedBox(height: 20),
                         Center(
                           child: Text(
                             '¡Estás a un paso de empezar!',
+                            textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: 22,
+                              fontSize: isMobile ? 18 : 22,
                               fontWeight: FontWeight.bold,
                               color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF334155),
                             ),
@@ -723,17 +774,18 @@ class LessonDetailScreen extends ConsumerWidget {
                         Center(
                           child: Text(
                             'Resuelve los ejercicios para completar este nivel.',
-                            style: TextStyle(fontSize: 16, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: isMobile ? 14 : 16, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
                           ),
                         ),
-                        const SizedBox(height: 40),
+                        SizedBox(height: isMobile ? 24 : 40),
                       ],
                       
                       // ─── Profe IA Card ─────────────────────────────────────────
                       Container(
                         width: double.infinity,
                         margin: const EdgeInsets.only(bottom: 32),
-                        padding: const EdgeInsets.all(24),
+                        padding: EdgeInsets.all(isMobile ? 16 : 24),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: isDark
@@ -742,7 +794,7 @@ class LessonDetailScreen extends ConsumerWidget {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: BorderRadius.circular(isMobile ? 18 : 24),
                           border: Border.all(
                             color: isDark
                                 ? const Color(0xFF6366F1).withOpacity(0.5)
@@ -752,30 +804,38 @@ class LessonDetailScreen extends ConsumerWidget {
                             BoxShadow(color: const Color(0xFF6366F1).withOpacity(0.06), blurRadius: 16, offset: const Offset(0, 4)),
                           ],
                         ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(14),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(colors: [Color(0xFF4F46E5), Color(0xFF7C3AED)]),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Text('🤖', style: TextStyle(fontSize: 32)),
-                            ),
-                            const SizedBox(width: 18),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                        child: LayoutBuilder(
+                          builder: (context, cardConstraints) {
+                            final isCardCompact = cardConstraints.maxWidth < 520;
+                            if (isCardCompact) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  Text(
-                                    '¿Tienes dudas con este tema? ✨',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: isDark ? Colors.white : const Color(0xFF1E293B),
-                                    ),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          gradient: const LinearGradient(colors: [Color(0xFF4F46E5), Color(0xFF7C3AED)]),
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        child: const Text('🤖', style: TextStyle(fontSize: 26)),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          '¿Tienes dudas con este tema? ✨',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: isDark ? Colors.white : const Color(0xFF1E293B),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: 10),
                                   Text(
                                     'El Profe IA leyó esta lección y puede explicarte conceptos, darte ejemplos o responder tus preguntas.',
                                     style: TextStyle(
@@ -784,47 +844,117 @@ class LessonDetailScreen extends ConsumerWidget {
                                       height: 1.4,
                                     ),
                                   ),
+                                  const SizedBox(height: 16),
+                                  ElevatedButton.icon(
+                                    onPressed: () {
+                                      AiTutorSheet.show(
+                                        context,
+                                        lessonTitle: lesson.title,
+                                        lessonContent: lesson.content,
+                                      );
+                                    },
+                                    icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
+                                    label: const Text('Preguntar a la IA', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF4F46E5),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                      elevation: 3,
+                                    ),
+                                  ),
                                 ],
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                AiTutorSheet.show(
-                                  context,
-                                  lessonTitle: lesson.title,
-                                  lessonContent: lesson.content,
-                                );
-                              },
-                              icon: const Icon(Icons.chat_bubble_outline_rounded, size: 20),
-                              label: const Text('Preguntar a la IA', style: TextStyle(fontWeight: FontWeight.bold)),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF4F46E5),
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                elevation: 3,
-                              ),
-                            ),
-                          ],
+                              );
+                            }
+
+                            return Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(14),
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(colors: [Color(0xFF4F46E5), Color(0xFF7C3AED)]),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: const Text('🤖', style: TextStyle(fontSize: 32)),
+                                ),
+                                const SizedBox(width: 18),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '¿Tienes dudas con este tema? ✨',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: isDark ? Colors.white : const Color(0xFF1E293B),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'El Profe IA leyó esta lección y puede explicarte conceptos, darte ejemplos o responder tus preguntas.',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: isDark ? const Color(0xFFC7D2FE) : Colors.grey.shade700,
+                                          height: 1.4,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    AiTutorSheet.show(
+                                      context,
+                                      lessonTitle: lesson.title,
+                                      lessonContent: lesson.content,
+                                    );
+                                  },
+                                  icon: const Icon(Icons.chat_bubble_outline_rounded, size: 20),
+                                  label: const Text('Preguntar a la IA', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF4F46E5),
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                    elevation: 3,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       ),
                       
                       Center(
-                        child: ElevatedButton.icon(
-                          icon: const Icon(Icons.rocket_launch, size: 28),
-                          label: const Text('¡Comenzar Práctica!', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 24),
-                            backgroundColor: const Color(0xFF10B981),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                            elevation: 8,
-                            shadowColor: const Color(0xFF10B981).withOpacity(0.5),
+                        child: SizedBox(
+                          width: isMobile ? double.infinity : null,
+                          child: ElevatedButton.icon(
+                            icon: Icon(Icons.rocket_launch, size: isMobile ? 22 : 28),
+                            label: Text(
+                              '¡Comenzar Práctica!',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: isMobile ? 18 : 22,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: isMobile ? 24 : 48,
+                                vertical: isMobile ? 16 : 24,
+                              ),
+                              backgroundColor: const Color(0xFF10B981),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(isMobile ? 20 : 30)),
+                              elevation: 8,
+                              shadowColor: const Color(0xFF10B981).withOpacity(0.5),
+                            ),
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => QuizScreen(lesson: lesson)));
+                            },
                           ),
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => QuizScreen(lesson: lesson)));
-                          },
                         ),
                       ),
                       const SizedBox(height: 60),
