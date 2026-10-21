@@ -64,9 +64,9 @@ class _BooksScreenState extends ConsumerState<BooksScreen> {
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(
-                        isMobile ? 16 : 24,
-                        isMobile ? 16 : 32,
-                        isMobile ? 16 : 24,
+                        isMobile ? 12 : 24,
+                        isMobile ? 14 : 32,
+                        isMobile ? 12 : 24,
                         isMobile ? 14 : 20,
                       ),
                       child: Container(
@@ -123,7 +123,7 @@ class _BooksScreenState extends ConsumerState<BooksScreen> {
                   // Search and Category Filters
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: isMobile ? 16.0 : 24.0),
+                      padding: EdgeInsets.symmetric(horizontal: isMobile ? 12.0 : 24.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -235,14 +235,21 @@ class _BooksScreenState extends ConsumerState<BooksScreen> {
                     )
                   else
                     SliverPadding(
-                      padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 24),
+                      padding: EdgeInsets.symmetric(horizontal: isMobile ? 12 : 24),
                       sliver: SliverGrid(
-                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: isMobile ? 360 : 310,
-                          mainAxisExtent: isMobile ? 470 : 490,
-                          crossAxisSpacing: isMobile ? 14 : 20,
-                          mainAxisSpacing: isMobile ? 14 : 20,
-                        ),
+                        gridDelegate: isMobile
+                            ? const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                mainAxisExtent: 315,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 12,
+                              )
+                            : const SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 310,
+                                mainAxisExtent: 490,
+                                crossAxisSpacing: 20,
+                                mainAxisSpacing: 20,
+                              ),
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
                             final book = filteredBooks[index];
@@ -368,36 +375,41 @@ class BookCard3D extends ConsumerStatefulWidget {
 class _BookCard3DState extends ConsumerState<BookCard3D> {
   bool _isHovered = false;
 
-  Widget _buildBadge(int index, int progress) {
+  Widget _buildBadge(int index, int progress, bool isMobile) {
     if (progress >= 100) {
       return _badgeContainer(
         gradient: const [Color(0xFF10B981), Color(0xFF059669)],
         icon: Icons.check_circle_rounded,
         text: 'LEÍDO',
+        isMobile: isMobile,
       );
     } else if (progress > 0) {
       return _badgeContainer(
         gradient: const [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
         icon: Icons.auto_stories,
         text: 'EN CURSO',
+        isMobile: isMobile,
       );
     } else if (index % 3 == 0) {
       return _badgeContainer(
         gradient: const [Color(0xFF10B981), Color(0xFF047857)],
         icon: Icons.auto_awesome,
         text: 'NUEVO',
+        isMobile: isMobile,
       );
     } else if (index % 3 == 1) {
       return _badgeContainer(
         gradient: const [Color(0xFFF97316), Color(0xFFDC2626)],
         icon: Icons.local_fire_department_rounded,
-        text: 'MÁS LEÍDO',
+        text: isMobile ? 'TOP' : 'MÁS LEÍDO',
+        isMobile: isMobile,
       );
     } else {
       return _badgeContainer(
         gradient: const [Color(0xFFF59E0B), Color(0xFFD97706)],
         icon: Icons.star_rounded,
-        text: 'DESTACADO',
+        text: isMobile ? 'TOP' : 'DESTACADO',
+        isMobile: isMobile,
       );
     }
   }
@@ -406,32 +418,36 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
     required List<Color> gradient,
     required IconData icon,
     required String text,
+    bool isMobile = false,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 6 : 9,
+        vertical: isMobile ? 2.5 : 4,
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(colors: gradient),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(isMobile ? 8 : 12),
         boxShadow: [
           BoxShadow(
-            color: gradient.first.withOpacity(0.4),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
+            color: gradient.first.withOpacity(0.35),
+            blurRadius: isMobile ? 4 : 8,
+            offset: Offset(0, isMobile ? 2 : 3),
           )
         ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: Colors.white, size: 12),
-          const SizedBox(width: 4),
+          Icon(icon, color: Colors.white, size: isMobile ? 9 : 12),
+          SizedBox(width: isMobile ? 2.5 : 4),
           Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
-              fontSize: 10,
+              fontSize: isMobile ? 8 : 10,
               fontWeight: FontWeight.w900,
-              letterSpacing: 0.6,
+              letterSpacing: isMobile ? 0.3 : 0.6,
             ),
           ),
         ],
@@ -439,14 +455,17 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
     );
   }
 
-  Widget _build3DBookCover(BookPalette palette) {
+  Widget _build3DBookCover(BookPalette palette, bool isMobile) {
+    final bookWidth = isMobile ? 82.0 : 130.0;
+    final bookHeight = isMobile ? 116.0 : 180.0;
+
     return AnimatedScale(
       scale: _isHovered ? 1.05 : 1.0,
       duration: const Duration(milliseconds: 200),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        width: 130,
-        height: 180,
+        width: bookWidth,
+        height: bookHeight,
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(4),
@@ -474,7 +493,7 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
               right: 0,
               top: 2,
               bottom: 2,
-              width: 5,
+              width: isMobile ? 3.5 : 5,
               child: Container(
                 decoration: BoxDecoration(
                   color: const Color(0xFFF8F5EE),
@@ -492,9 +511,14 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
 
             // 2. Superficie Principal de la Carátula
             Positioned.fill(
-              right: 4,
+              right: isMobile ? 3 : 4,
               child: Container(
-                padding: const EdgeInsets.fromLTRB(16, 12, 10, 12),
+                padding: EdgeInsets.fromLTRB(
+                  isMobile ? 10 : 16,
+                  isMobile ? 8 : 12,
+                  isMobile ? 6 : 10,
+                  isMobile ? 8 : 12,
+                ),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: palette.gradient,
@@ -514,7 +538,10 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
                   children: [
                     // Etiqueta superior de categoría
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isMobile ? 4 : 6,
+                        vertical: isMobile ? 1 : 2,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.black.withOpacity(0.25),
                         borderRadius: BorderRadius.circular(4),
@@ -524,9 +551,9 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
                         widget.book.category.toUpperCase(),
                         style: TextStyle(
                           color: palette.accentColor,
-                          fontSize: 8.5,
+                          fontSize: isMobile ? 7.0 : 8.5,
                           fontWeight: FontWeight.w900,
-                          letterSpacing: 1.1,
+                          letterSpacing: isMobile ? 0.6 : 1.1,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -535,8 +562,8 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
 
                     // Emblema Central
                     Container(
-                      width: 46,
-                      height: 46,
+                      width: isMobile ? 30 : 46,
+                      height: isMobile ? 30 : 46,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: RadialGradient(
@@ -545,11 +572,14 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
                             Colors.white.withOpacity(0.05),
                           ],
                         ),
-                        border: Border.all(color: palette.accentColor.withOpacity(0.6), width: 1.5),
+                        border: Border.all(
+                          color: palette.accentColor.withOpacity(0.6),
+                          width: isMobile ? 1.0 : 1.5,
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color: palette.accentColor.withOpacity(0.2),
-                            blurRadius: 8,
+                            blurRadius: isMobile ? 4 : 8,
                           ),
                         ],
                       ),
@@ -557,7 +587,7 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
                         child: Icon(
                           palette.icon,
                           color: Colors.white,
-                          size: 24,
+                          size: isMobile ? 16 : 24,
                         ),
                       ),
                     ),
@@ -569,25 +599,25 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
                         Text(
                           widget.book.title,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
-                            fontSize: 11,
+                            fontSize: isMobile ? 8.5 : 11,
                             fontWeight: FontWeight.bold,
                             height: 1.15,
-                            shadows: [
+                            shadows: const [
                               Shadow(color: Colors.black54, blurRadius: 4, offset: Offset(0, 1)),
                             ],
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 3),
+                        SizedBox(height: isMobile ? 2 : 3),
                         Text(
                           widget.book.author,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.75),
-                            fontSize: 9,
+                            fontSize: isMobile ? 7.0 : 9,
                             fontWeight: FontWeight.w500,
                           ),
                           maxLines: 1,
@@ -605,7 +635,7 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
               left: 0,
               top: 0,
               bottom: 0,
-              width: 14,
+              width: isMobile ? 9 : 14,
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.only(
@@ -659,7 +689,7 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
     );
   }
 
-  Widget _buildProgressBar(int progress, bool isDark) {
+  Widget _buildProgressBar(int progress, bool isDark, bool isMobile) {
     final pct = (progress / 100.0).clamp(0.0, 1.0);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -670,15 +700,17 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
             Text(
               progress > 0 ? 'Progreso' : 'Estado',
               style: TextStyle(
-                fontSize: 11,
+                fontSize: isMobile ? 9.5 : 11,
                 fontWeight: FontWeight.w600,
                 color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
               ),
             ),
             Text(
-              progress == 100 ? '¡Completado! 🎉' : (progress > 0 ? '$progress%' : 'Por comenzar'),
+              progress == 100
+                  ? (isMobile ? '¡Leído! 🎉' : '¡Completado! 🎉')
+                  : (progress > 0 ? '$progress%' : (isMobile ? 'Sin iniciar' : 'Por comenzar')),
               style: TextStyle(
-                fontSize: 11,
+                fontSize: isMobile ? 9.5 : 11,
                 fontWeight: FontWeight.bold,
                 color: progress == 100
                     ? const Color(0xFF10B981)
@@ -687,11 +719,11 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
             ),
           ],
         ),
-        const SizedBox(height: 5),
+        SizedBox(height: isMobile ? 3 : 5),
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: Container(
-            height: 6,
+            height: isMobile ? 4 : 6,
             color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
             child: FractionallySizedBox(
               alignment: Alignment.centerLeft,
@@ -718,6 +750,7 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
     final progress = prefs.getInt('book_progress_${widget.book.id}') ?? 0;
     final palette = BookPalette.getForCategory(widget.book.category);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isMobile = MediaQuery.of(context).size.width < 600;
 
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
@@ -726,7 +759,7 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
         duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1E293B) : Colors.white,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(isMobile ? 16 : 22),
           border: Border.all(
             color: _isHovered
                 ? const Color(0xFF818CF8)
@@ -746,12 +779,12 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
           children: [
             // ─── 1. ZONA SUPERIOR: ESCENARIO 3D DEL LIBRO Y BADGE ───────────
             Container(
-              height: 220,
+              height: isMobile ? 138 : 220,
               decoration: BoxDecoration(
                 color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(21),
-                  topRight: Radius.circular(21),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(isMobile ? 15 : 21),
+                  topRight: Radius.circular(isMobile ? 15 : 21),
                 ),
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
@@ -766,17 +799,17 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
                 children: [
                   // Sombra del pedestal / estante
                   Positioned(
-                    bottom: 12,
+                    bottom: isMobile ? 8 : 12,
                     child: Container(
-                      width: 110,
-                      height: 12,
+                      width: isMobile ? 70 : 110,
+                      height: isMobile ? 8 : 12,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.20),
-                            blurRadius: 14,
-                            spreadRadius: 2,
+                            blurRadius: isMobile ? 8 : 14,
+                            spreadRadius: isMobile ? 1 : 2,
                           ),
                         ],
                       ),
@@ -785,15 +818,15 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
 
                   // El Libro en 3D
                   Positioned(
-                    bottom: 16,
-                    child: _build3DBookCover(palette),
+                    bottom: isMobile ? 10 : 16,
+                    child: _build3DBookCover(palette, isMobile),
                   ),
 
                   // Badge de Estado Flotante en la esquina
                   Positioned(
-                    top: 12,
-                    right: 12,
-                    child: _buildBadge(widget.index, progress),
+                    top: isMobile ? 8 : 12,
+                    right: isMobile ? 8 : 12,
+                    child: _buildBadge(widget.index, progress, isMobile),
                   ),
                 ],
               ),
@@ -802,7 +835,12 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
             // ─── 2. ZONA INFERIOR: METADATOS Y ACCIONES ────────────────────
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
+                padding: EdgeInsets.fromLTRB(
+                  isMobile ? 10 : 16,
+                  isMobile ? 8 : 12,
+                  isMobile ? 10 : 16,
+                  isMobile ? 10 : 14,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -812,10 +850,13 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
                       children: [
                         // Chip de categoría
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isMobile ? 6 : 8,
+                            vertical: isMobile ? 2 : 3,
+                          ),
                           decoration: BoxDecoration(
                             color: isDark ? const Color(0xFF312E81) : const Color(0xFFEEF2FF),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(isMobile ? 6 : 8),
                             border: Border.all(
                               color: isDark ? const Color(0xFF4338CA) : const Color(0xFFC7D2FE)),
                           ),
@@ -823,34 +864,34 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
                             widget.book.category,
                             style: TextStyle(
                               color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4338CA),
-                              fontSize: 11,
+                              fontSize: isMobile ? 9.5 : 11,
                               fontWeight: FontWeight.bold,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: isMobile ? 4 : 8),
 
                         // Título del libro
                         Text(
                           widget.book.title,
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: isMobile ? 12.0 : 15,
                             fontWeight: FontWeight.bold,
                             color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
-                            height: 1.2,
+                            height: 1.15,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: isMobile ? 2 : 4),
 
                         // Autor
                         Text(
                           'Por: ${widget.book.author}',
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: isMobile ? 10.0 : 12,
                             fontWeight: FontWeight.w500,
                             color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                           ),
@@ -863,23 +904,28 @@ class _BookCard3DState extends ConsumerState<BookCard3D> {
                     // Barra de progreso y botón de acción
                     Column(
                       children: [
-                        _buildProgressBar(progress, isDark),
-                        const SizedBox(height: 10),
+                        _buildProgressBar(progress, isDark, isMobile),
+                        SizedBox(height: isMobile ? 6 : 10),
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton.icon(
-                            icon: const Icon(Icons.auto_stories, size: 16),
+                            icon: Icon(Icons.auto_stories, size: isMobile ? 13 : 16),
                             label: Text(
-                              progress > 0 ? 'Continuar Lectura' : 'Leer Libro',
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                              progress > 0
+                                  ? (progress == 100 ? (isMobile ? 'Releer' : 'Releer Libro') : (isMobile ? 'Continuar' : 'Continuar Lectura'))
+                                  : (isMobile ? 'Leer' : 'Leer Libro'),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: isMobile ? 11 : 13,
+                              ),
                             ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF4F46E5),
                               foregroundColor: Colors.white,
                               elevation: 0,
-                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              padding: EdgeInsets.symmetric(vertical: isMobile ? 7 : 10),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(isMobile ? 10 : 12),
                               ),
                             ),
                             onPressed: widget.onRead,
