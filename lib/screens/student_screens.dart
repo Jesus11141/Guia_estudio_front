@@ -154,7 +154,7 @@ class GradesScreen extends ConsumerWidget {
                     sliver: SliverGrid(
                       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                         maxCrossAxisExtent: 450,
-                        mainAxisExtent: isMobile ? 120 : 140,
+                        mainAxisExtent: isMobile ? 125 : 140,
                         crossAxisSpacing: isMobile ? 14 : 24,
                         mainAxisSpacing: isMobile ? 14 : 24,
                       ),
@@ -185,11 +185,12 @@ class GradesScreen extends ConsumerWidget {
                                   Navigator.push(context, MaterialPageRoute(builder: (_) => SubjectsScreen(grade: grade)));
                                 },
                                 child: Padding(
-                                  padding: const EdgeInsets.all(20.0),
+                                  padding: EdgeInsets.all(isMobile ? 14.0 : 20.0),
                                   child: Row(
                                     children: [
                                       Container(
-                                        width: 64, height: 64,
+                                        width: isMobile ? 54 : 64,
+                                        height: isMobile ? 54 : 64,
                                         decoration: BoxDecoration(
                                           gradient: const LinearGradient(colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)]),
                                           borderRadius: BorderRadius.circular(16),
@@ -197,9 +198,9 @@ class GradesScreen extends ConsumerWidget {
                                             BoxShadow(color: const Color(0xFF6366F1).withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4))
                                           ]
                                         ),
-                                        child: const Center(child: Icon(Icons.school, color: Colors.white, size: 32)),
+                                        child: Center(child: Icon(Icons.school, color: Colors.white, size: isMobile ? 28 : 32)),
                                       ),
-                                      const SizedBox(width: 20),
+                                      SizedBox(width: isMobile ? 14 : 20),
                                       Expanded(
                                         child: Column(
                                           mainAxisAlignment: MainAxisAlignment.center,
@@ -208,7 +209,7 @@ class GradesScreen extends ConsumerWidget {
                                             Text(
                                               grade.name,
                                               style: TextStyle(
-                                                fontSize: 20,
+                                                fontSize: isMobile ? 18 : 20,
                                                 fontWeight: FontWeight.bold,
                                                 color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                                               ),
@@ -366,7 +367,7 @@ class SubjectsScreen extends ConsumerWidget {
                     sliver: SliverGrid(
                       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                         maxCrossAxisExtent: 450,
-                        mainAxisExtent: isMobile ? 100 : 120,
+                        mainAxisExtent: isMobile ? 110 : 120,
                         crossAxisSpacing: isMobile ? 14 : 24,
                         mainAxisSpacing: isMobile ? 14 : 24,
                       ),
@@ -397,23 +398,24 @@ class SubjectsScreen extends ConsumerWidget {
                                   Navigator.push(context, MaterialPageRoute(builder: (_) => LessonsScreen(subject: subject)));
                                 },
                                 child: Padding(
-                                  padding: const EdgeInsets.all(20.0),
+                                  padding: EdgeInsets.all(isMobile ? 14.0 : 20.0),
                                   child: Row(
                                     children: [
                                       Container(
-                                        width: 56, height: 56,
+                                        width: isMobile ? 48 : 56,
+                                        height: isMobile ? 48 : 56,
                                         decoration: BoxDecoration(
                                           color: isDark ? const Color(0xFF0369A1).withOpacity(0.25) : const Color(0xFFF0F9FF),
                                           borderRadius: BorderRadius.circular(16),
                                         ),
-                                        child: const Center(child: Icon(Icons.auto_stories, color: Color(0xFF0EA5E9), size: 28)),
+                                        child: Center(child: Icon(Icons.auto_stories, color: const Color(0xFF0EA5E9), size: isMobile ? 24 : 28)),
                                       ),
-                                      const SizedBox(width: 20),
+                                      SizedBox(width: isMobile ? 14 : 20),
                                       Expanded(
                                         child: Text(
                                           subject.name,
                                           style: TextStyle(
-                                            fontSize: 18,
+                                            fontSize: isMobile ? 16 : 18,
                                             fontWeight: FontWeight.w800,
                                             color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                                           ),
@@ -538,104 +540,118 @@ class LessonsScreen extends ConsumerWidget {
                             );
                           }
                           
-                          return LayoutBuilder(
-                            builder: (context, constraints) {
-                              bool isWide = constraints.maxWidth > 600;
-                              return GridView.builder(
-                                padding: EdgeInsets.zero,
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: isWide ? 2 : 1,
-                                  childAspectRatio: isWide ? 2.5 : (constraints.maxWidth / 120),
-                                  crossAxisSpacing: 24,
-                                  mainAxisSpacing: 24,
+                          return ListView.separated(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: lessons.length,
+                            separatorBuilder: (context, index) => const SizedBox(height: 16),
+                            itemBuilder: (context, index) {
+                              final lesson = lessons[index];
+                              return Container(
+                                decoration: BoxDecoration(
+                                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                                  borderRadius: BorderRadius.circular(22),
+                                  border: Border.all(
+                                    color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                                    width: 1.5,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(isDark ? 0.25 : 0.04),
+                                      blurRadius: 15,
+                                      offset: const Offset(0, 6),
+                                    )
+                                  ],
                                 ),
-                                itemCount: lessons.length,
-                                itemBuilder: (context, index) {
-                                  final lesson = lessons[index];
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                                      borderRadius: BorderRadius.circular(24),
-                                      border: Border.all(
-                                        color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
-                                        width: 1.5,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(isDark ? 0.25 : 0.04),
-                                          blurRadius: 15,
-                                          offset: const Offset(0, 8),
-                                        )
-                                      ],
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(22),
+                                    hoverColor: isDark ? const Color(0xFF334155).withOpacity(0.3) : null,
+                                    onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (_) => LessonDetailScreen(lesson: lesson)),
                                     ),
-                                    child: Material(
-                                      color: Colors.transparent,
-                                      child: InkWell(
-                                        borderRadius: BorderRadius.circular(24),
-                                        hoverColor: isDark ? const Color(0xFF334155).withOpacity(0.3) : null,
-                                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => LessonDetailScreen(lesson: lesson))),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(20),
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                width: 64,
-                                                height: 64,
-                                                decoration: BoxDecoration(
-                                                  gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFFD946EF)]),
-                                                  borderRadius: BorderRadius.circular(16),
-                                                ),
-                                                child: const Icon(Icons.explore, color: Colors.white, size: 32),
+                                    child: Padding(
+                                      padding: EdgeInsets.all(isMobile ? 16 : 20),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: isMobile ? 52 : 62,
+                                            height: isMobile ? 52 : 62,
+                                            decoration: BoxDecoration(
+                                              gradient: const LinearGradient(
+                                                colors: [Color(0xFF8B5CF6), Color(0xFFD946EF)],
                                               ),
-                                              const SizedBox(width: 20),
-                                              Expanded(
-                                                child: Column(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                              borderRadius: BorderRadius.circular(16),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: const Color(0xFF8B5CF6).withOpacity(0.3),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 3),
+                                                )
+                                              ],
+                                            ),
+                                            child: Icon(Icons.explore, color: Colors.white, size: isMobile ? 26 : 30),
+                                          ),
+                                          SizedBox(width: isMobile ? 14 : 20),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  lesson.title,
+                                                  style: TextStyle(
+                                                    fontSize: isMobile ? 16 : 18,
+                                                    fontWeight: FontWeight.w800,
+                                                    color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                                                    height: 1.3,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 6),
+                                                Row(
                                                   children: [
+                                                    Icon(
+                                                      Icons.play_circle_fill_rounded,
+                                                      size: 15,
+                                                      color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF6366F1),
+                                                    ),
+                                                    const SizedBox(width: 5),
                                                     Text(
-                                                      lesson.title,
+                                                      'Toca para estudiar y practicar',
                                                       style: TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight: FontWeight.w900,
-                                                        color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                                                        fontSize: isMobile ? 12 : 13,
+                                                        fontWeight: FontWeight.w600,
+                                                        color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF6366F1),
                                                       ),
                                                     ),
-                                                    if (lesson.content.isNotEmpty) ...[
-                                                      const SizedBox(height: 6),
-                                                      Text(
-                                                        lesson.content,
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
-                                                        ),
-                                                      ),
-                                                    ]
                                                   ],
                                                 ),
-                                              ),
-                                              const SizedBox(width: 12),
-                                              Container(
-                                                padding: const EdgeInsets.all(8),
-                                                decoration: BoxDecoration(
-                                                  color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
-                                                  borderRadius: BorderRadius.circular(12)
-                                                ),
-                                                child: Icon(Icons.arrow_forward_ios, color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF94A3B8), size: 16),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        ),
+                                          const SizedBox(width: 10),
+                                          Container(
+                                            padding: const EdgeInsets.all(8),
+                                            decoration: BoxDecoration(
+                                              color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            child: Icon(
+                                              Icons.arrow_forward_ios,
+                                              color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF94A3B8),
+                                              size: 16,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  );
-                                },
+                                  ),
+                                ),
                               );
-                            }
+                            },
                           );
                         },
                         loading: () => const Center(child: CircularProgressIndicator()),
