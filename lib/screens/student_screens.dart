@@ -505,7 +505,7 @@ class LessonsScreen extends ConsumerWidget {
           SliverToBoxAdapter(
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 800),
+                constraints: const BoxConstraints(maxWidth: 1200),
                 child: Padding(
                   padding: EdgeInsets.all(isMobile ? 16.0 : 32.0),
                   child: Column(
@@ -540,14 +540,31 @@ class LessonsScreen extends ConsumerWidget {
                             );
                           }
                           
-                          return ListView.separated(
+                          return GridView.builder(
                             padding: EdgeInsets.zero,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 380,
+                              mainAxisExtent: isMobile ? 185 : 210,
+                              crossAxisSpacing: isMobile ? 14 : 20,
+                              mainAxisSpacing: isMobile ? 14 : 20,
+                            ),
                             itemCount: lessons.length,
-                            separatorBuilder: (context, index) => const SizedBox(height: 16),
                             itemBuilder: (context, index) {
                               final lesson = lessons[index];
+                              final cardGradients = [
+                                [const Color(0xFF6366F1), const Color(0xFF8B5CF6)], // Indigo-Purple
+                                [const Color(0xFF8B5CF6), const Color(0xFFD946EF)], // Purple-Pink
+                                [const Color(0xFF0EA5E9), const Color(0xFF2563EB)], // Sky-Blue
+                                [const Color(0xFF10B981), const Color(0xFF059669)], // Emerald-Teal
+                                [const Color(0xFFF59E0B), const Color(0xFFD97706)], // Amber-Orange
+                                [const Color(0xFFEC4899), const Color(0xFFF43F5E)], // Pink-Rose
+                                [const Color(0xFF14B8A6), const Color(0xFF0D9488)], // Teal-Cyan
+                                [const Color(0xFF4F46E5), const Color(0xFF7C3AED)], // Indigo-Violet
+                              ];
+                              final gradientPair = cardGradients[index % cardGradients.length];
+
                               return Container(
                                 decoration: BoxDecoration(
                                   color: isDark ? const Color(0xFF1E293B) : Colors.white,
@@ -558,7 +575,7 @@ class LessonsScreen extends ConsumerWidget {
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(isDark ? 0.25 : 0.04),
+                                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
                                       blurRadius: 15,
                                       offset: const Offset(0, 6),
                                     )
@@ -568,81 +585,117 @@ class LessonsScreen extends ConsumerWidget {
                                   color: Colors.transparent,
                                   child: InkWell(
                                     borderRadius: BorderRadius.circular(22),
-                                    hoverColor: isDark ? const Color(0xFF334155).withOpacity(0.3) : null,
+                                    hoverColor: isDark ? const Color(0xFF334155).withOpacity(0.3) : const Color(0xFFEEF2FF),
                                     onTap: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(builder: (_) => LessonDetailScreen(lesson: lesson)),
                                     ),
                                     child: Padding(
                                       padding: EdgeInsets.all(isMobile ? 16 : 20),
-                                      child: Row(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Container(
-                                            width: isMobile ? 52 : 62,
-                                            height: isMobile ? 52 : 62,
-                                            decoration: BoxDecoration(
-                                              gradient: const LinearGradient(
-                                                colors: [Color(0xFF8B5CF6), Color(0xFFD946EF)],
-                                              ),
-                                              borderRadius: BorderRadius.circular(16),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: const Color(0xFF8B5CF6).withOpacity(0.3),
-                                                  blurRadius: 8,
-                                                  offset: const Offset(0, 3),
-                                                )
-                                              ],
-                                            ),
-                                            child: Icon(Icons.explore, color: Colors.white, size: isMobile ? 26 : 30),
-                                          ),
-                                          SizedBox(width: isMobile ? 14 : 20),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  lesson.title,
-                                                  style: TextStyle(
-                                                    fontSize: isMobile ? 16 : 18,
-                                                    fontWeight: FontWeight.w800,
-                                                    color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
-                                                    height: 1.3,
+                                          // Fila Superior: Icono de Gradiente + Badge de Unidad
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Container(
+                                                width: isMobile ? 44 : 50,
+                                                height: isMobile ? 44 : 50,
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    colors: gradientPair,
+                                                    begin: Alignment.topLeft,
+                                                    end: Alignment.bottomRight,
                                                   ),
-                                                ),
-                                                const SizedBox(height: 6),
-                                                Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.play_circle_fill_rounded,
-                                                      size: 15,
-                                                      color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF6366F1),
-                                                    ),
-                                                    const SizedBox(width: 5),
-                                                    Text(
-                                                      'Toca para estudiar y practicar',
-                                                      style: TextStyle(
-                                                        fontSize: isMobile ? 12 : 13,
-                                                        fontWeight: FontWeight.w600,
-                                                        color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF6366F1),
-                                                      ),
-                                                    ),
+                                                  borderRadius: BorderRadius.circular(15),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: gradientPair.first.withOpacity(0.35),
+                                                      blurRadius: 8,
+                                                      offset: const Offset(0, 3),
+                                                    )
                                                   ],
                                                 ),
-                                              ],
+                                                child: Icon(Icons.explore, color: Colors.white, size: isMobile ? 24 : 28),
+                                              ),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                                decoration: BoxDecoration(
+                                                  color: isDark ? const Color(0xFF312E81) : const Color(0xFFEEF2FF),
+                                                  borderRadius: BorderRadius.circular(16),
+                                                  border: Border.all(
+                                                    color: isDark
+                                                        ? const Color(0xFF4F46E5).withOpacity(0.5)
+                                                        : const Color(0xFFC7D2FE),
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  'Unidad ${index + 1}',
+                                                  style: TextStyle(
+                                                    fontSize: 11.5,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 12),
+                                          // Título en el centro con espacio expandido seguro
+                                          Expanded(
+                                            child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                lesson.title,
+                                                style: TextStyle(
+                                                  fontSize: isMobile ? 15 : 16.5,
+                                                  fontWeight: FontWeight.w900,
+                                                  height: 1.3,
+                                                  color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                                                ),
+                                                maxLines: 3,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
                                             ),
                                           ),
-                                          const SizedBox(width: 10),
+                                          const SizedBox(height: 12),
+                                          // Footer: Barra de acción "Estudiar y Practicar"
                                           Container(
-                                            padding: const EdgeInsets.all(8),
+                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                             decoration: BoxDecoration(
-                                              color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
+                                              color: isDark ? const Color(0xFF0F172A).withOpacity(0.6) : const Color(0xFFF8FAFC),
                                               borderRadius: BorderRadius.circular(12),
+                                              border: Border.all(
+                                                color: isDark ? const Color(0xFF334155).withOpacity(0.5) : const Color(0xFFE2E8F0),
+                                              ),
                                             ),
-                                            child: Icon(
-                                              Icons.arrow_forward_ios,
-                                              color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF94A3B8),
-                                              size: 16,
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.play_circle_fill_rounded,
+                                                  size: 16,
+                                                  color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5),
+                                                ),
+                                                const SizedBox(width: 6),
+                                                Expanded(
+                                                  child: Text(
+                                                    'Estudiar y Practicar',
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight: FontWeight.w700,
+                                                      color: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5),
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                                Icon(
+                                                  Icons.arrow_forward_rounded,
+                                                  size: 14,
+                                                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ],
