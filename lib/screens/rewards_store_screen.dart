@@ -451,7 +451,7 @@ class _RewardsStoreScreenState extends ConsumerState<RewardsStoreScreen> {
                 itemCount: AvatarCatalog.all.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
-                  childAspectRatio: 0.78,
+                  childAspectRatio: constraints.maxWidth < 600 ? 0.68 : 0.76,
                   crossAxisSpacing: 14,
                   mainAxisSpacing: 14,
                 ),
@@ -591,16 +591,24 @@ class _RewardsStoreScreenState extends ConsumerState<RewardsStoreScreen> {
                               const SizedBox(height: 10),
                               SizedBox(
                                 width: double.infinity,
-                                height: 36,
+                                height: 38,
                                 child: isEquipped
-                                    ? OutlinedButton(
-                                        onPressed: null,
-                                        style: OutlinedButton.styleFrom(
-                                          foregroundColor: const Color(0xFF10B981),
-                                          side: const BorderSide(color: Color(0xFF10B981)),
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    ? Container(
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFF10B981).withOpacity(0.12),
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(color: const Color(0xFF10B981), width: 1.5),
                                         ),
-                                        child: const Text('Equipado', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12)),
+                                        child: const Center(
+                                          child: Text(
+                                            '✓ Equipado',
+                                            style: TextStyle(
+                                              color: Color(0xFF10B981),
+                                              fontWeight: FontWeight.w900,
+                                              fontSize: 12.5,
+                                            ),
+                                          ),
+                                        ),
                                       )
                                     : isUnlocked
                                         ? ElevatedButton(
@@ -608,10 +616,18 @@ class _RewardsStoreScreenState extends ConsumerState<RewardsStoreScreen> {
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: const Color(0xFF4F46E5),
                                               foregroundColor: Colors.white,
-                                              elevation: 0,
+                                              elevation: 1,
+                                              minimumSize: const Size(0, 38),
+                                              padding: EdgeInsets.zero,
+                                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                             ),
-                                            child: const Text('Equipar', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                            child: const Center(
+                                              child: Text(
+                                                'Equipar',
+                                                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
+                                              ),
+                                            ),
                                           )
                                         : ElevatedButton(
                                             onPressed: (_isLoading || !canAfford)
@@ -625,14 +641,19 @@ class _RewardsStoreScreenState extends ConsumerState<RewardsStoreScreen> {
                                                   }
                                                 : () => _handleAvatarAction(avatar, false),
                                             style: ElevatedButton.styleFrom(
-                                              backgroundColor: canAfford ? const Color(0xFFF59E0B) : const Color(0xFFE2E8F0),
-                                              foregroundColor: canAfford ? Colors.white : const Color(0xFF94A3B8),
+                                              backgroundColor: canAfford ? const Color(0xFFF59E0B) : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+                                              foregroundColor: canAfford ? Colors.white : (isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8)),
                                               elevation: canAfford ? 1 : 0,
+                                              minimumSize: const Size(0, 38),
+                                              padding: EdgeInsets.zero,
+                                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                             ),
-                                            child: Text(
-                                              canAfford ? 'Obtener (${avatar.cost} ⭐)' : 'Bloqueado',
-                                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+                                            child: Center(
+                                              child: Text(
+                                                canAfford ? 'Obtener (${avatar.cost} ⭐)' : 'Bloqueado',
+                                                style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11.5),
+                                              ),
                                             ),
                                           ),
                               ),
