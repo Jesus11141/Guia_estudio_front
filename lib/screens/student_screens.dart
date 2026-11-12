@@ -6,6 +6,7 @@ import '../providers.dart';
 import '../models/avatar_catalog.dart';
 import '../widgets/ai_tutor_sheet.dart';
 import '../widgets/profe_ia_floating_button.dart';
+import '../widgets/interactive_study_material.dart';
 
 class GradesScreen extends ConsumerWidget {
   const GradesScreen({super.key});
@@ -783,49 +784,14 @@ class LessonDetailScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (lesson.content.isNotEmpty) ...[
-                        Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.all(isMobile ? 18.0 : 32.0),
-                          decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                            borderRadius: BorderRadius.circular(isMobile ? 18 : 24),
-                            border: Border.all(
-                              color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
-                            ),
-                            boxShadow: [
-                              BoxShadow(color: Colors.black.withOpacity(isDark ? 0.25 : 0.02), blurRadius: 10, offset: const Offset(0, 4))
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(Icons.info_outline, color: Color(0xFF4F46E5)),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Material de Estudio',
-                                    style: TextStyle(
-                                      fontSize: isMobile ? 16 : 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                lesson.content,
-                                style: TextStyle(
-                                  fontSize: isMobile ? 14 : 16,
-                                  height: 1.8,
-                                  color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF475569),
-                                ),
-                              ),
-                            ],
-                          ),
+                        InteractiveStudyMaterial(
+                          lessonTitle: lesson.title,
+                          content: lesson.content,
+                          onStartPractice: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => QuizScreen(lesson: lesson)));
+                          },
                         ),
-                        SizedBox(height: isMobile ? 24 : 40),
+                        SizedBox(height: isMobile ? 20 : 32),
                       ] else ...[
                         const SizedBox(height: 20),
                         Center(
